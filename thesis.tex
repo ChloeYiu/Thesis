@@ -15,7 +15,7 @@
 \usepackage{tikz}
 \usepackage{multirow}
 \usepackage{makecell}
-\usepackage[colorlinks=true, linkcolor=blue, linktoc=page]{hyperref}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, linktoc=page]{hyperref}
 \usepackage[intoc]{nomencl}
 \makenomenclature
 \renewcommand{\nomgroup}[1]{%
@@ -58,5 +58,13 @@
 \input{chapters/setup.tex}
 \input{chapters/result.tex}
 \input{chapters/conclusions.tex}
+
+\cite{einstein1905}
+
+\bibliographystyle{plain}
+\bibliography{pages/references}
+
+\appendix
+\input{pages/appendix.tex}
 
 \end{document}
