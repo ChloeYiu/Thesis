@@ -5,6 +5,7 @@
 \usepackage{titlesec}
 \usepackage{titling}
 \usepackage{lmodern}
+\usepackage{ifthen}
 \usepackage{amsmath,psfrag,pstcol}
 \usepackage{float}
 \usepackage[font=small,labelfont=bf,width=0.9\linewidth,margin=0.5cm]{caption}
@@ -14,26 +15,48 @@
 \usepackage{tikz}
 \usepackage{multirow}
 \usepackage{makecell}
-
-\doublespacing  % Apply 1.5 spacing globally
-
+\usepackage[colorlinks=true, linkcolor=blue, linktoc=page]{hyperref}
+\usepackage[intoc]{nomencl}
+\makenomenclature
+\renewcommand{\nomgroup}[1]{%
+    \ifthenelse{\equal{#1}{A}}{\item[\textbf{Symbols}]}{}%
+    \ifthenelse{\equal{#1}{Z}}{\item[\textbf{Acronym/Abbreviation}]}{}%
+}
+\onehalfspacing
 \graphicspath{{images/}}
 
 \begin{document}
 
+\pagenumbering{roman}
 \input{pages/title.tex}
 \input{pages/declaration.tex}
 \input{pages/acknowledgements.tex}
+\input{pages/abstract.tex}
 
 \tableofcontents
+\clearpage
 
 \addcontentsline{toc}{chapter}{List of Tables}
 \listoftables
+\clearpage
 
 \addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
+\clearpage
 
-\input{chapters/chapter1.tex}
+\addcontentsline{toc}{chapter}{Nomenclature}
+\printnomenclature
+\clearpage
 
+\pagenumbering{arabic}
+\nomenclature[A]{TEST}{Test}
+
+\input{chapters/introduction.tex}
+\input{chapters/assessment.tex}
+\input{chapters/grader.tex}
+\input{chapters/cav.tex}
+\input{chapters/setup.tex}
+\input{chapters/result.tex}
+\input{chapters/conclusions.tex}
 
 \end{document}

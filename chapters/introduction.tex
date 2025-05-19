@@ -1,0 +1,28 @@
+\chapter{Introduction}
+
+\section{Motivation}
+More demand for automatic assessment.
+
+To maintain storing validity, need to ensure system is unbiased.
+
+\section{Approach}
+
+Previous research has proved concept activation vector (CAV) \nomenclature[Z]{CAV}{Concept Activation Vector}
+is a good approach for feature-based model, extracted through a simple linear classifier with no weighting.
+
+There are however, different types of graders, and different ways to extract the CAV.
+
+Investigate how the gradient distance pattern differs across models, and how the use of different CAV extraction method affects the CAV performance.
+
+Additionally tries to narrow down factors affecting gradient distance pattern for a deeper understanding.
+
+\section{Report Outline}
+This report consists of 7 chapters with the following structure:
+\begin{itemize}
+    \item Chapter \ref{chap:assessment} introduces the role of an unbiased system in a spoken language assessment system, and highlighted the current development in the field.
+    \item Chapter \ref{chap:graders} describes the different types of graders which would have its fairness being measured.
+    \item Chapter \ref{chap:cav} outlines the steps of CAV extraction.
+    \item Chapter \ref{chap:setup} describes the construction of training, calibration and testing data, alongside explanation on model biasing, factor isolation setup, and justificatin of performance metrics and hyper-parameters.
+    \item Chapter \ref{chap:results} presents the results of the experiment, and discusses the implications.
+    \item Chapter \ref{chap:conclusions} concludes the report and discusses future work.
+\end{itemize}

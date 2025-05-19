@@ -1,0 +1,32 @@
+\chapter{Experimental Results and Discussion} \label{chap:results}
+
+\section{Grader Performance}
+\subsection{Model Accuracy}
+RMSE, MSE, $<0.5$, $<1$ measures, pre and post calibration - all are decent.
+
+\subsection{CAV Accuracy}
+
+Positive and negative concept success rates, both no weighting and balanced weighting.
+
+\subsection{Gradient Distance for Bias}
+
+Plot the gradient distance graphs and the tables of the three model.
+
+\subsection{Model Biasing}
+Plot the graph showing the gradient distance with vs without biased model - show whether CAV can actually measure bias.
+
+\section{Factor Isolation}
+\subsection{Architecture of Network}
+Try using the text-based architecture, but feed in feature vector.
+
+Compare model accuracy, CAV accuracy, and gradient distance from the original text-based model.
+
+\subsection{Model Type}
+Change feature-based model from DDN to DNN,.
+
+Compare model accuracy, CAV accuracy, and gradient distance from the original feature-based model.
+
+\subsection{Nature of Input}
+Concatenate input with both feature and attention from text, retain text-based architecture.
+
+Compare model accuracy, CAV accuracy, and gradient distance from the original text-based model.

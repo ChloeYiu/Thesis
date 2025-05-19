@@ -1,2 +1,4 @@
 thesis.*
+*.log
+
 !thesis.tex
