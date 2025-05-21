@@ -1,19 +1,52 @@
-\chapter{Graders} \label{chap:graders}
+\chapter{Spoken Language Assessment} \label{chap:graders}
 
-Describe how the inputs are extracted from the speech.
+The three types of models under investigation are: text-based, feature-based, and audio-based models, which have different ways to process the input data to the intermediate vector $\hat{x}$ detailed in section
 
-All eventually fed into a neural network of different architectures
+Each grader has its own architecture, with different number of layers, neurons, activation functions, and dropout rates. The dropout rate is the proportion of neurons that are randomly set to zero during training, which helps prevent overfitting. Table \ref{activation functions} defines the types of activation functions under consideration, where $\alpha$ is a small constant ($<<1$) that allows a small gradient when the unit is not active.
 
-Then the result would be passed through a linear calibration model to get the final score
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Activation Function}                                                             & \textbf{Definition}                     \\ \hline
+        Rectified Linear Unit (ReLU) \nomenclature[Z]{ReLU}{Rectified Linear Unit}               & $f(x) = \max(0, x)$                     \\ \hline
+        Leaky Rectified Linear Unit (LReLU) \nomenclature[Z]{LReLU}{Leaky Rectified Linear Unit} & $f(x) = \begin{cases}
+                                                                                                                   x,        & \text{if } x > 0    \\
+                                                                                                                   \alpha x, & \text{if } x \leq 0
+                                                                                                               \end{cases}$ \\ \hline
+    \end{tabular}
+    \caption{Activation Functions Under Consideration}
+    \label{activation functions}
+\end{table}
 
-\section{BERT Grader}
+Each grader also have its own model type - it could be a deep neural network (DNN) \nomenclature[Z]{DNN}{Deep Neural Network} or a deep density network (DDN) \nomenclature[Z]{DDN}{Deep Density Network}. A DNN directly outputs the score from the input vector, using mean squared error (MSE) \nomenclature[Z]{MSE}{Mean Squared Error} loss function. A DDN, on the other hand, predicts the score from the input vector using a Gaussian distribution, outputting the mean ($\mu$) \nomenclature[A]{$\mu$}{Mean} and the variance ($\sigma^2$) \nomenclature[A]{$\sigma^2$}{Variance}. It uses negative log-likelihood for multivariate Gaussian (NLL) \nomenclature[Z]{NLL}{Negative Log-Likelihood} loss function.
+
+The formula for the MSE and NLL loss functions are given by:
+\begin{equation}
+    \text{MSE} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2
+\end{equation}
+\begin{equation}
+    \text{NLL} = -\frac{1}{N} \sum_{i=1}^{N} \left( \log(\sigma_i^2) + \frac{(y_i - \mu_i)^2}{(2\sigma_i^2 + \epsilon)} \right)
+\end{equation}
+where $N$ is the number of samples, $y_i$ is the true score,  $\hat{y}_i$ is the predicted score, and $\epsilon = 1\times10^{-8}$ is a small constant to prevent division by zero.
+
+The result would then be passed through linear calibration with the output result shown in equation \ref{eq:calibration}. The calibration is done using a linear regression model, which is trained to minimize the MSE between the predicted and true score. The linear regression model outputs two parameters: the slope ($m$) \nomenclature[A]{$m$}{Slope} and the intercept ($c$) \nomenclature[A]{$c$}{Intercept}. The calibrated score is then calculated using the formula:
+
+\begin{equation}
+    \hat{y}_{\text{calibrated}} = m*\hat{y}_{\text{uncalibrated}} + c
+    \label{eq:calibration}
+\end{equation}
+
+\section{Text-based Model}
 
 Brief description of BERT taking in text, go through attention mechanism, generate attention.
 
-\section{Feature Grader}
+\section{Feature-based Model}
 
-Breif description of the feature vector - what they consist of (quote paper), how they are extracted from the audio.
+\cite{feature}
 
-\section{Wav2Vec Grader}
+Brief description of the feature vector - what they consist of (quote paper), how they are extracted from the audio.
+
+\section{Audio-based Model}
 
 Brief description of Wav2Vec taking in audio vector, go through attention mechanism, generate attention.

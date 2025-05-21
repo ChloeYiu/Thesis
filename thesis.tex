@@ -1,5 +1,6 @@
 \documentclass[12pt]{report}
-\usepackage[a4paper, total={6in, 9in}]{geometry}
+\usepackage[a4paper, margin=25mm]{geometry}
+\usepackage{amssymb} 
 \usepackage{graphicx}
 \usepackage{setspace}
 \usepackage{titlesec}
@@ -9,8 +10,10 @@
 \usepackage{amsmath,psfrag,pstcol}
 \usepackage{float}
 \usepackage[font=small,labelfont=bf,width=0.9\linewidth,margin=0.5cm]{caption}
-\setlength{\parindent}{0pt}
-\usepackage[skip=7pt plus1pt]{parskip}
+% Remove the following line to enable paragraph indentation
+% \setlength{\parindent}{0pt}
+% Disable or remove the parskip package
+% \usepackage[skip=7pt plus1pt]{parskip}
 \usepackage{subcaption}
 \usepackage{tikz}
 \usepackage{multirow}
@@ -22,7 +25,7 @@
     \ifthenelse{\equal{#1}{A}}{\item[\textbf{Symbols}]}{}%
     \ifthenelse{\equal{#1}{Z}}{\item[\textbf{Acronym/Abbreviation}]}{}%
 }
-\onehalfspacing
+\doublespacing
 \graphicspath{{images/}}
 
 \begin{document}
@@ -49,19 +52,15 @@
 \clearpage
 
 \pagenumbering{arabic}
-\nomenclature[A]{TEST}{Test}
 
 \input{chapters/introduction.tex}
-\input{chapters/assessment.tex}
 \input{chapters/grader.tex}
 \input{chapters/cav.tex}
 \input{chapters/setup.tex}
 \input{chapters/result.tex}
 \input{chapters/conclusions.tex}
 
-\cite{einstein1905}
-
-\bibliographystyle{plain}
+\bibliographystyle{ieeetr}
 \bibliography{pages/references}
 
 \appendix
