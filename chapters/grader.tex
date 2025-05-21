@@ -1,8 +1,6 @@
 \chapter{Spoken Language Assessment} \label{chap:graders}
 
-The three types of models under investigation are: text-based, feature-based, and audio-based models, which have different ways to process the input data to the intermediate vector $\hat{x}$ detailed in section
-
-Each grader has its own architecture, with different number of layers, neurons, activation functions, and dropout rates. The dropout rate is the proportion of neurons that are randomly set to zero during training, which helps prevent overfitting. Table \ref{activation functions} defines the types of activation functions under consideration, where $\alpha$ is a small constant ($<<1$) that allows a small gradient when the unit is not active.
+The three types of models under investigation are: text-based, feature-based, and audio-based models. Each grader has its own architecture, with different number of layers, neurons, activation functions, and dropout rates. The dropout rate is the proportion of neurons that are randomly set to zero during training, which helps prevent overfitting. Table \ref{activation functions} defines the types of activation functions under consideration, where $\alpha$ is a small constant ($<<1$) that allows a small gradient when the unit is not active.
 
 \begin{table}[H]
     \centering
@@ -37,16 +35,63 @@ The result would then be passed through linear calibration with the output resul
     \label{eq:calibration}
 \end{equation}
 
-\section{Text-based Model}
+Each grader also has its own way to process the input data to the intermediate vector $\hat{x}$. The following sections describe the architecture of each model in detail.
 
-Brief description of BERT taking in text, go through attention mechanism, generate attention.
+\section{Text-based Model}
+Figure \ref{fig:text} shows the architecture of the text-based model. The BERT processing begins with text transcript extracted by the speech recognizer from the candidate's audio. Each sample is fed through the BERT tokenizer \nomenclature[Z]{BERT}{Bidirectional Encoder Representations from Transformers}, which converts the text into a sequence of independent tokens ($\mathcal{T}$). $\mathcal{T}$ is then passed through the BERT encoder, creating contextualized embeddings for the tokens ($\mathcal{C}$), which takes into account the surrounding tokens. $\mathcal{C}$ is further passed through four independent attention mechanisms. Their outputs, each of 768-D, are concatenated to form the 3072-D token embeddings $\hat{x}$.
+
+The token embeddings $\hat{x}$ is then passed through a fully connected DNN with 2 hidden layers, using the ReLU activation function. Each layer is labelled with a red box, with the red number indicating the change in dimension after each layer. The output is a single scalar indicated the predicted score.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{text.png}
+    \caption{Text-based Model Architecture}
+    \label{fig:text}
+\end{figure}
 
 \section{Feature-based Model}
+Figure \ref{fig:feature} shows the architecture of the feature-based model. The speech data have been preprocessed to produce a 356-D vector. The features include statistics of: word level, phone duration, rhythm, fluency, and frequency \cite{graders}. The full list of features is detailed in Table \ref{tab:feature_full}, with the definition of the feature groups in Table \ref{tab:feature_def} in the appendix.
 
-\cite{feature}
+The feature vector $\hat{x}$ is then passed through a fully connected DDN with 3 hidden layers. LReLU with $\alpha = 0.01$ is used as the activation function, and the dropout rate is set to 0.5. The output includes both $\mu$ and $\log(\sigma)$ of the predicted score Gaussian distribution. Similarly, the red box and red number indicated the layers and the dimension change.
 
-Brief description of the feature vector - what they consist of (quote paper), how they are extracted from the audio.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{feature.png}
+    \caption{Feature-based Model Architecture}
+    \label{fig:feature}
+\end{figure}
 
 \section{Audio-based Model}
+Figure \ref{fig:audio} shows the architecture of the audio-based model. The wav2vec processing begins with the audio vector for each candidate. The data collator aggregates meta data (candidate number, attention masks), feeding vector to the wav2vec encoder, which creates contextualized embeddings for the tokens ($\mathcal{C}$). $\mathcal{C}$ is passed through two layers of 4 individual attention mechanisms. The output is concatenated to form the 3072-D token embeddings $\hat{x}$.
 
-Brief description of Wav2Vec taking in audio vector, go through attention mechanism, generate attention.
+The token embeddings $\hat{x}$ is then passed through a fully connected DNN with a hidden layer, using the ReLU activation function and a dropout rate of 0.1. The output is a single scalar indicating the predicted score. As above, the red box and red number indicate the layers and the dimension change.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{audio.png}
+    \caption{Audio-based Model Architecture}
+    \label{fig:audio}
+\end{figure}
+
+\section{Summary}
+This chapter describes the differences across the three types of models under investigation. Table \ref{tab:models} summarizes their key differences, including the input data, model type, activation function, dropout rate, and node numbers. Understanding these differences would be crucial for isolating factors that affect bias measurement.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+                                     & \textbf{Text-based}                                 & \textbf{Feature-based} & \textbf{Audio-based} \\ \hline
+        \textbf{Intermediate Vector} & Text embeddings                                     & Feature vector         & Audio embeddings     \\ \hline
+        \textbf{Model Type}          & DNN                                                 & DDN                    & DNN                  \\ \hline
+        \textbf{Activation Function} & ReLU                                                & LReLU                  & ReLU                 \\ \hline
+        \textbf{Dropout} Rate        & /                                                   & 0.5                    & 0.1                  \\ \hline
+        \textbf{Node Numbers}        & $3072 \rightarrow 600 \rightarrow 20 \rightarrow 1$
+                                     & \makecell[l]{
+        $356 \rightarrow 185 \rightarrow$                                                                                                  \\
+            $185 \rightarrow 185 \rightarrow 2$
+        }
+                                     & $3072 \rightarrow 3072 \rightarrow 1$                                                               \\ \hline
+    \end{tabular}
+    \caption{Transposed Summary of Graders}
+    \label{tab:models}
+\end{table}

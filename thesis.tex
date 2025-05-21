@@ -19,14 +19,38 @@
 \usepackage{multirow}
 \usepackage{makecell}
 \usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, linktoc=page]{hyperref}
+\usepackage{bookmark}
 \usepackage[intoc]{nomencl}
 \makenomenclature
 \renewcommand{\nomgroup}[1]{%
     \ifthenelse{\equal{#1}{A}}{\item[\textbf{Symbols}]}{}%
     \ifthenelse{\equal{#1}{Z}}{\item[\textbf{Acronym/Abbreviation}]}{}%
 }
-\doublespacing
+\onehalfspacing
 \graphicspath{{images/}}
+\usepackage{etoolbox}
+% Set single spacing for tables
+\AtBeginEnvironment{table}{\singlespacing}
+
+\makeatletter
+% Define a flag that turns on when \appendix is used
+\newif\ifinappendix
+\pretocmd{\appendix}{\inappendixtrue}{}{}
+\makeatother
+
+\usepackage{titlesec}
+% Custom chapter formatting
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}
+  {\ifinappendix Appendix \thechapter \else \chaptername\ \thechapter \fi}
+  {20pt}
+  {
+    \vspace*{-20pt}
+    \ifinappendix\vspace*{30pt}\fi
+  }
+
+% Control spacing before/after chapter title block
+\titlespacing*{\chapter}{0pt}{-30pt}{20pt}
 
 \begin{document}
 
