@@ -13,11 +13,11 @@ The three types of models under investigation are: text-based, feature-based, an
                                                                                                                    \alpha x, & \text{if } x \leq 0
                                                                                                                \end{cases}$ \\ \hline
     \end{tabular}
-    \caption{Activation Functions Under Consideration}
+    \caption{Activation functions under consideration}
     \label{activation functions}
 \end{table}
 
-Each grader also have its own model type - it could be a deep neural network (DNN) \nomenclature[Z]{DNN}{Deep Neural Network} or a deep density network (DDN) \nomenclature[Z]{DDN}{Deep Density Network}. A DNN directly outputs the score from the input vector, using mean squared error (MSE) \nomenclature[Z]{MSE}{Mean Squared Error} loss function. A DDN, on the other hand, predicts the score from the input vector using a Gaussian distribution, outputting the mean ($\mu$) \nomenclature[A]{$\mu$}{Mean} and the variance ($\sigma^2$) \nomenclature[A]{$\sigma^2$}{Variance}. It uses negative log-likelihood for multivariate Gaussian (NLL) \nomenclature[Z]{NLL}{Negative Log-Likelihood} loss function.
+Each grader also have its own model type - it could be a deep neural network (DNN) \nomenclature[Z]{DNN}{Deep Neural Network} or a deep density network (DDN). A DNN directly outputs the score from the input vector, using mean squared error (MSE) \nomenclature[Z]{MSE}{Mean Squared Error} loss function. A DDN, on the other hand, predicts the score from the input vector using a Gaussian distribution, outputting the mean ($\mu$) \nomenclature[A]{$\mu$}{Mean} and the standard deviation ($\sigma$) \nomenclature[A]{$\sigma$}{Standard deviation}. It uses negative log-likelihood for multivariate Gaussian (NLL) \nomenclature[Z]{NLL}{Negative Log-Likelihood} loss function.
 
 The formula for the MSE and NLL loss functions are given by:
 \begin{equation}
@@ -38,38 +38,38 @@ The result would then be passed through linear calibration with the output resul
 Each grader also has its own way to process the input data to the intermediate vector $\hat{x}$. The following sections describe the architecture of each model in detail.
 
 \section{Text-based Model}
-Figure \ref{fig:text} shows the architecture of the text-based model. The BERT processing begins with text transcript extracted by the speech recognizer from the candidate's audio. Each sample is fed through the BERT tokenizer \nomenclature[Z]{BERT}{Bidirectional Encoder Representations from Transformers}, which converts the text into a sequence of independent tokens ($\mathcal{T}$). $\mathcal{T}$ is then passed through the BERT encoder, creating contextualized embeddings for the tokens ($\mathcal{C}$), which takes into account the surrounding tokens. $\mathcal{C}$ is further passed through four independent attention mechanisms. Their outputs, each of 768-D, are concatenated to form the 3072-D token embeddings $\hat{x}$.
+Figure \ref{fig:text} shows the architecture of the text-based model. The BERT processing begins with text transcript extracted by the speech recognizer from the candidate's audio. Each sample is fed through the BERT tokenizer \nomenclature[Z]{BERT}{Bidirectional Encoder Representations from Transformers}, which converts the text into a sequence of independent tokens ($\mathcal{T}$). $\mathcal{T}$ is then passed through the BERT encoder, creating contextualized embeddings for the tokens ($\mathcal{C}$), which takes into account the surrounding tokens. $\mathcal{C}$ is further passed through four independent attention mechanisms. Their outputs, each of 768 dimensions, are concatenated to form the 3072-dimensional token embeddings $\hat{x}$.
 
 The token embeddings $\hat{x}$ is then passed through a fully connected DNN with 2 hidden layers, using the ReLU activation function. Each layer is labelled with a red box, with the red number indicating the change in dimension after each layer. The output is a single scalar indicated the predicted score.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{text.png}
-    \caption{Text-based Model Architecture}
+    \caption{Text-based model architecture}
     \label{fig:text}
 \end{figure}
 
 \section{Feature-based Model}
-Figure \ref{fig:feature} shows the architecture of the feature-based model. The speech data have been preprocessed to produce a 356-D vector. The features include statistics of: word level, phone duration, rhythm, fluency, and frequency \cite{graders}. The full list of features is detailed in Table \ref{tab:feature_full}, with the definition of the feature groups in Table \ref{tab:feature_def} in the appendix.
+Figure \ref{fig:feature} shows the architecture of the feature-based model. The speech data have been preprocessed to produce a 356-dimensional vector. The features include statistics of: word level, phone duration, rhythm, fluency, and frequency \cite{graders}. The full list of features is detailed in Table \ref{tab:feature_full}, with the definition of the feature groups in Table \ref{tab:feature_def} in the appendix.
 
 The feature vector $\hat{x}$ is then passed through a fully connected DDN with 3 hidden layers. LReLU with $\alpha = 0.01$ is used as the activation function, and the dropout rate is set to 0.5. The output includes both $\mu$ and $\log(\sigma)$ of the predicted score Gaussian distribution. Similarly, the red box and red number indicated the layers and the dimension change.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{feature.png}
-    \caption{Feature-based Model Architecture}
+    \caption{Feature-based model architecture}
     \label{fig:feature}
 \end{figure}
 
 \section{Audio-based Model}
-Figure \ref{fig:audio} shows the architecture of the audio-based model. The wav2vec processing begins with the audio vector for each candidate. The data collator aggregates meta data (candidate number, attention masks), feeding vector to the wav2vec encoder, which creates contextualized embeddings for the tokens ($\mathcal{C}$). $\mathcal{C}$ is passed through two layers of 4 individual attention mechanisms. The output is concatenated to form the 3072-D token embeddings $\hat{x}$.
+Figure \ref{fig:audio} shows the architecture of the audio-based model. The wav2vec processing begins with the audio vector for each candidate. The data collator aggregates meta data (candidate number, attention masks), feeding vector to the wav2vec encoder, which creates contextualized embeddings for the tokens ($\mathcal{C}$). $\mathcal{C}$ is passed through two layers of 4 individual attention mechanisms. The output is concatenated to form the 3072-dimensional  token embeddings $\hat{x}$.
 
 The token embeddings $\hat{x}$ is then passed through a fully connected DNN with a hidden layer, using the ReLU activation function and a dropout rate of 0.1. The output is a single scalar indicating the predicted score. As above, the red box and red number indicate the layers and the dimension change.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{audio.png}
-    \caption{Audio-based Model Architecture}
+    \caption{Audio-based model architecture}
     \label{fig:audio}
 \end{figure}
 
@@ -84,7 +84,7 @@ This chapter describes the differences across the three types of models under in
         \textbf{Intermediate Vector} & Text embeddings                                     & Feature vector         & Audio embeddings     \\ \hline
         \textbf{Model Type}          & DNN                                                 & DDN                    & DNN                  \\ \hline
         \textbf{Activation Function} & ReLU                                                & LReLU                  & ReLU                 \\ \hline
-        \textbf{Dropout} Rate        & /                                                   & 0.5                    & 0.1                  \\ \hline
+        \textbf{Dropout Rate}        & /                                                   & 0.5                    & 0.1                  \\ \hline
         \textbf{Node Numbers}        & $3072 \rightarrow 600 \rightarrow 20 \rightarrow 1$
                                      & \makecell[l]{
         $356 \rightarrow 185 \rightarrow$                                                                                                  \\
@@ -92,6 +92,6 @@ This chapter describes the differences across the three types of models under in
         }
                                      & $3072 \rightarrow 3072 \rightarrow 1$                                                               \\ \hline
     \end{tabular}
-    \caption{Transposed Summary of Graders}
+    \caption{Summary of the three types of models under investigation}
     \label{tab:models}
 \end{table}
