@@ -1,93 +1,93 @@
-\chapter{Auto Marker Feature}
+% \chapter{Auto Marker Feature}
 
-\begin{table}[H]
-    \centering
-    \begin{tabular}{|c|l|l|}
-        \hline
-        \textbf{No.} & \textbf{Item}                            & \textbf{Statistics}                    \\
-        \hline
-        1            & \multirow{4}{*}{Words}                   & frequency                              \\
-        2            &                                          & mean duration                          \\
-        3            &                                          & number                                 \\
-        4            &                                          & number of unique                       \\
-        \hline
-        5            & \multirow{4}{*}{Phone/Grapheme Duration} & mean                                   \\
-        6            &                                          & standard deviation                     \\
-        7            &                                          & median                                 \\
-        8            &                                          & mean absolute deviation                \\
-        \hline
-        9            & Time Used                                & fraction                               \\
-        \hline
-        10           & Syllables                                & articulation rate                      \\
-        \hline
-        11           & \multirow{4}{*}{Silence Duration}        & mean                                   \\
-        12           &                                          & standard deviation                     \\
-        13           &                                          & median                                 \\
-        14           &                                          & mean absolute deviation                \\
-        \hline
-        15           & Long Silences                            & number                                 \\
-        \hline
-        16           & \multirow{4}{*}{Long Silence Duration}   & mean                                   \\
-        17           &                                          & standard deviation                     \\
-        18           &                                          & median                                 \\
-        19           &                                          & mean absolute deviation                \\
-        \hline
-        20           & \multirow{3}{*}{Disfluencies}            & number all                             \\
-        21           &                                          & fraction all                           \\
-        22           &                                          & number partial words                   \\
-        \hline
-        23           & \multirow{2}{*}{Hesitations}             & number                                 \\
-        24           &                                          & fraction                               \\
-        \hline
-        25           & \multirow{5}{*}{Language Model Score}    & normalised A1 GDLM perplexity          \\
-        26           &                                          & normalised A2 GDLM perplexity          \\
-        27           &                                          & normalised B1 GDLM perplexity          \\
-        28           &                                          & normalised B2 GDLM perplexity          \\
-        29           &                                          & normalised C GDLM perplexity           \\
-        \hline
-        30           & \multirow{2}{*}{Confidence}              & average frame confidence all           \\
-        31           &                                          & av. frame confidence excl. hesitations \\
-        \hline
-        32--356      & Phone Distance Features                  & log(1+KL divergence) per phone pair    \\
-        \hline
-    \end{tabular}
-    \caption{Feature-based model feature set. Source: \cite{feature}}
-    \label{tab:feature_full}
-\end{table}
+% \begin{table}[H]
+%     \centering
+%     \begin{tabular}{|c|l|l|}
+%         \hline
+%         \textbf{No.} & \textbf{Item}                            & \textbf{Statistics}                    \\
+%         \hline
+%         1            & \multirow{4}{*}{Words}                   & frequency                              \\
+%         2            &                                          & mean duration                          \\
+%         3            &                                          & number                                 \\
+%         4            &                                          & number of unique                       \\
+%         \hline
+%         5            & \multirow{4}{*}{Phone/Grapheme Duration} & mean                                   \\
+%         6            &                                          & standard deviation                     \\
+%         7            &                                          & median                                 \\
+%         8            &                                          & mean absolute deviation                \\
+%         \hline
+%         9            & Time Used                                & fraction                               \\
+%         \hline
+%         10           & Syllables                                & articulation rate                      \\
+%         \hline
+%         11           & \multirow{4}{*}{Silence Duration}        & mean                                   \\
+%         12           &                                          & standard deviation                     \\
+%         13           &                                          & median                                 \\
+%         14           &                                          & mean absolute deviation                \\
+%         \hline
+%         15           & Long Silences                            & number                                 \\
+%         \hline
+%         16           & \multirow{4}{*}{Long Silence Duration}   & mean                                   \\
+%         17           &                                          & standard deviation                     \\
+%         18           &                                          & median                                 \\
+%         19           &                                          & mean absolute deviation                \\
+%         \hline
+%         20           & \multirow{3}{*}{Disfluencies}            & number all                             \\
+%         21           &                                          & fraction all                           \\
+%         22           &                                          & number partial words                   \\
+%         \hline
+%         23           & \multirow{2}{*}{Hesitations}             & number                                 \\
+%         24           &                                          & fraction                               \\
+%         \hline
+%         25           & \multirow{5}{*}{Language Model Score}    & normalised A1 GDLM perplexity          \\
+%         26           &                                          & normalised A2 GDLM perplexity          \\
+%         27           &                                          & normalised B1 GDLM perplexity          \\
+%         28           &                                          & normalised B2 GDLM perplexity          \\
+%         29           &                                          & normalised C GDLM perplexity           \\
+%         \hline
+%         30           & \multirow{2}{*}{Confidence}              & average frame confidence all           \\
+%         31           &                                          & av. frame confidence excl. hesitations \\
+%         \hline
+%         32--356      & Phone Distance Features                  & log(1+KL divergence) per phone pair    \\
+%         \hline
+%     \end{tabular}
+%     \caption{Feature-based model feature set. Source: \cite{feature}}
+%     \label{tab:feature_full}
+% \end{table}
 
-\begin{table}[H]
-    \centering
-    \renewcommand{\arraystretch}{1.3}
-    \begin{tabular}{|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{10cm}|}
-        \hline
-        \textbf{Item}               & \textbf{Definition}                                                                                                                                                                                                                  \\
-        \hline
-        Silence Duration            & all segments recognised as silence                                                                                                                                                                                                   \\
-        \hline
-        Long Silence Duration       & within word silence segments > 0.25s in length (does not include start/end silence)                                                                                                                                                  \\
-        \hline
-        Phone/Grapheme Duration     & all CV segments not recognised as silence                                                                                                                                                                                            \\
-        \hline
-        Word Duration               & all word segments not recognised as silence                                                                                                                                                                                          \\
-        \hline
-        Disfluencies                & all partial words, hesitations, long silences within words (> 0.25s), non-silence words repeated twice, non-silence words repeated with short pause between (HTK only)                                                               \\
-        \hline
-        Word Frequency              & speaking rate in terms of word frequency (number of words / speech duration) across all utterances where within speech silence included in duration                                                                                  \\
-        \hline
-        Syllables Articulation Rate & speaking/articulation rate in terms of (pseudo) syllable rate (number of vowels / speech duration) across all utterances where within speech silence not included in duration                                                        \\
-        \hline
-        Time Used                   & fraction: mean utterance duration / mean recording duration where utterance duration is the time from the start of the 1st non-silence segment to the end of the last, and recording duration is the total duration of the utterance \\
-        \hline
-        Language Model Score        & normalised perplexity (ppl) of recognised transcriptions measured using grade dependent (GD) and grade independent (GI) LMs. Score = log (GDLM ppl/GILM ppl)                                                                         \\
-        \hline
-        Confidence                  & average ASR confidence across a) all words and b) excluding hesitations                                                                                                                                                              \\
-        \hline
-        Phone Distance Features     & phone distance measure between each phone (grapheme) pair. Log(1+KL) distance metric                                                                                                                                                 \\
-        \hline
-    \end{tabular}
-    \caption{Definition of items in feature set (CV = consonant/vowel mapped phone or grapheme). Source: \cite{feature}}
-    \label{tab:feature_def}
-\end{table}
+% \begin{table}[H]
+%     \centering
+%     \renewcommand{\arraystretch}{1.3}
+%     \begin{tabular}{|>{\raggedright\arraybackslash}p{4cm}|>{\raggedright\arraybackslash}p{10cm}|}
+%         \hline
+%         \textbf{Item}               & \textbf{Definition}                                                                                                                                                                                                                  \\
+%         \hline
+%         Silence Duration            & all segments recognised as silence                                                                                                                                                                                                   \\
+%         \hline
+%         Long Silence Duration       & within word silence segments > 0.25s in length (does not include start/end silence)                                                                                                                                                  \\
+%         \hline
+%         Phone/Grapheme Duration     & all CV segments not recognised as silence                                                                                                                                                                                            \\
+%         \hline
+%         Word Duration               & all word segments not recognised as silence                                                                                                                                                                                          \\
+%         \hline
+%         Disfluencies                & all partial words, hesitations, long silences within words (> 0.25s), non-silence words repeated twice, non-silence words repeated with short pause between (HTK only)                                                               \\
+%         \hline
+%         Word Frequency              & speaking rate in terms of word frequency (number of words / speech duration) across all utterances where within speech silence included in duration                                                                                  \\
+%         \hline
+%         Syllables Articulation Rate & speaking/articulation rate in terms of (pseudo) syllable rate (number of vowels / speech duration) across all utterances where within speech silence not included in duration                                                        \\
+%         \hline
+%         Time Used                   & fraction: mean utterance duration / mean recording duration where utterance duration is the time from the start of the 1st non-silence segment to the end of the last, and recording duration is the total duration of the utterance \\
+%         \hline
+%         Language Model Score        & normalised perplexity (ppl) of recognised transcriptions measured using grade dependent (GD) and grade independent (GI) LMs. Score = log (GDLM ppl/GILM ppl)                                                                         \\
+%         \hline
+%         Confidence                  & average ASR confidence across a) all words and b) excluding hesitations                                                                                                                                                              \\
+%         \hline
+%         Phone Distance Features     & phone distance measure between each phone (grapheme) pair. Log(1+KL) distance metric                                                                                                                                                 \\
+%         \hline
+%     \end{tabular}
+%     \caption{Definition of items in feature set (CV = consonant/vowel mapped phone or grapheme). Source: \cite{feature}}
+%     \label{tab:feature_def}
+% \end{table}
 
 
 \chapter{Title of Appendix B}
