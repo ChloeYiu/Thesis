@@ -1,32 +1,702 @@
 \chapter{Experimental Results and Discussion} \label{chap:results}
 
-\section{Grader Performance}
-\subsection{Model Accuracy}
-RMSE, MSE, $<0.5$, $<1$ measures, pre and post calibration - all are decent.
+\section{Grader Performance} \label{sec:grader_performance}
+This section presents the performance of the grader models trained with the three different features: text, feature, and audio. Accurate models set foundation for the subsequent sections on bias detection and analysis.
 
-\subsection{CAV Accuracy}
+The accuracy of the three models, both calibrated and uncalibrated, is presented in Table \ref{tab:model_accuracy}. The table shows the Root Mean Square Error (RMSE), Pearson Correlation Coefficient (PCC), and the percentage of predictions that are less than 0.5 ($< 0.5$) and 1.0 ($< 1$) from the ground truth. The coefficients for the linear calibration of the three models are presented in Table \ref{tab:linear_regression_coefficients} as a reference. All the models perform decently well with similar results for the metric values, with all the RMSE approximately in the range of $0.6$ to $0.7$, PCC in $0.8$ to $0.9$ $< 0.5$ in $55-60\%$, and $< 1$ in $80-90\%$. All the calibrated models only show a slight improvement in the performance. Overall, the results indicate that the models are capable of predicting the scores with reasonable accuracy, hence reliable for CAV extraction.
 
-Positive and negative concept success rates, both no weighting and balanced weighting.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|lc|c|c|c|c|}
+        \hline
+        \multicolumn{2}{|l|}{\textbf{}}                         & \textbf{RMSE}         & \textbf{PCC} & \textbf{\textless 0.5} & \textbf{\textless 1}        \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Text}}}    & \textbf{Uncalibrated} & 0.678        & 0.837                  & 55.6                 & 84.8 \\ \cline{2-6}
+        \multicolumn{1}{|l|}{}                                  & \textbf{Calibrated}   & 0.627        & 0.837                  & 58.1                 & 88.2 \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Feature}}} & \textbf{Uncalibrated} & 0.694        & 0.821                  & 55.3                 & 83.4 \\ \cline{2-6}
+        \multicolumn{1}{|l|}{}                                  & \textbf{Calibrated}   & 0.638        & 0.821                  & 56.6                 & 87.9 \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Audio}}}   & \textbf{Uncalibrated} & 0.671        & 0.853                  & 57.3                 & 85.4 \\ \cline{2-6}
+        \multicolumn{1}{|l|}{}                                  & \textbf{Calibrated}   & 0.598        & 0.853                  & 61.1                 & 89.0 \\ \hline
+    \end{tabular}
+    \caption{Model accuracy for the three models, both calibrated and uncalibrated.}
+    \label{tab:model_accuracy}
+\end{table}
 
-\subsection{Gradient Distance for Bias}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{}        & \textbf{Slope (m)} & \textbf{Intercept (c)} \\ \hline
+        \textbf{Text}    & 1.19               & -0.80                  \\ \hline
+        \textbf{Feature} & 1.42               & -1.45                  \\ \hline
+        \textbf{Audio}   & 1.14               & -0.75                  \\ \hline
+    \end{tabular}
+    \caption{Linear calibration coefficients for the three models}
+    \label{tab:linear_regression_coefficients}
+\end{table}
 
-Plot the gradient distance graphs and the tables of the three model.
+\section{Bias Detection} \label{sec:bias_detection}
+This section presents the results of bias detection performed on text-based, feature-based and audio-based models. Section \ref{sec:cav_accuracy} presents the accuracy of the CAV extracted, and Section \ref{sec:gradient_distance} examines the bias measurement results through gradient distance. Finally, section \ref{sec:model_biasing} discusses the bias measurement results on the biased version of the three models.
 
-\subsection{Model Biasing}
-Plot the graph showing the gradient distance with vs without biased model - show whether CAV can actually measure bias.
+\subsection{CAV Accuracy} \label{sec:cav_accuracy}
+The accuracy of the CAV extracted using the first layer of activations from the three models is presented in Table \ref{tab:CAV_accuracy_combined}. The table shows the accuracy of the CAV in differentiating positive and negative training data for each concept, both with and without balanced weighting. Those with accuracy less than 60\% are highlighted in red. In addition, the percentage of positive targets for each concept from the training data is shown in Table \ref{tab:pos_target}, with which the training data is used for extracting and evaluating the CAV.
 
-\section{Factor Isolation}
-\subsection{Architecture of Network}
-Try using the text-based architecture, but feed in feature vector.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|cc|cc|cc|}
+        \hline
+        \multirow{2}{*}{} & \multirow{2}{*}{\textbf{Concept}}
+                          & \multicolumn{2}{c|}{\textbf{Text}}
+                          & \multicolumn{2}{c|}{\textbf{Feature}}
+                          & \multicolumn{2}{c|}{\textbf{Audio}}                                                                                                                 \\ \cline{3-8}
+                          &
+                          & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}
+                          & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}
+                          & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}                                                                               \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{No weighting}}}
+                          & $\geq$ C1                                              & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & $1_{\pm 0}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & $1_{\pm 0}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & $1_{\pm 0}$                                                                                \\
+                          & $\geq$ B2                                              & \multicolumn{1}{c|}{$\textcolor{red}{50.6_{\pm 2.0}}$} & $95.3_{\pm 0.2}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{48.9_{\pm 1.7}}$} & $95.4_{\pm 0.1}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{54.0_{\pm 0.7}}$} & $95.6_{\pm 0.1}$                                                                           \\
+                          & $\leq$ A2                                              & \multicolumn{1}{c|}{$\textcolor{red}{58.2_{\pm 1.3}}$} & $93.3_{\pm 0.5}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{44.0_{\pm 0.8}}$} & $94.4_{\pm 0.1}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{58.9_{\pm 0.0}}$} & $93.1_{\pm 0.0}$                                                                           \\ \cline{2-8}
+                          & Thai                                                   & \multicolumn{1}{c|}{$\textcolor{red}{50.0_{\pm 2.6}}$} & $95.1_{\pm 0.2}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{48.9_{\pm 3.5}}$} & $95.2_{\pm 0.2}$
+                          & \multicolumn{1}{c|}{$91.0_{\pm 0.0}$}                  & $97.9_{\pm 0.0}$                                                                           \\
+                          & Spanish                                                & \multicolumn{1}{c|}{$76.1_{\pm 4.1}$}                  & $79.0_{\pm 5.3}$
+                          & \multicolumn{1}{c|}{$79.4_{\pm 0.6}$}                  & $78.6_{\pm 0.7}$
+                          & \multicolumn{1}{c|}{$88.2_{\pm 0.0}$}                  & $90.7_{\pm 0.0}$                                                                           \\ \cline{2-8}
+                          & Young                                                  & \multicolumn{1}{c|}{$79.9_{\pm 1.3}$}                  & $\textcolor{red}{55.6_{\pm 1.6}}$
+                          & \multicolumn{1}{c|}{$83.8_{\pm 0.2}$}                  & $\textcolor{red}{41.5_{\pm 0.7}}$
+                          & \multicolumn{1}{c|}{$80.5_{\pm 0.3}$}                  & $72.6_{\pm 0.7}$                                                                           \\ \cline{2-8}
+                          & Male                                                   & \multicolumn{1}{c|}{$\textcolor{red}{40.7_{\pm 6.2}}$} & $79.7_{\pm 2.7}$
+                          & \multicolumn{1}{c|}{$\textcolor{red}{47.1_{\pm 2.4}}$} & $78.0_{\pm 0.4}$
+                          & \multicolumn{1}{c|}{$94.4_{\pm 0.0}$}                  & $96.5_{\pm 0.0}$                                                                           \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{Balanced weighting}}}
+                          & $\geq$ C1                                              & \multicolumn{1}{c|}{$96.5_{\pm 0.8}$}                  & $69.3_{\pm 8.9}$
+                          & \multicolumn{1}{c|}{$94.0_{\pm 0.5}$}                  & $76.9_{\pm 1.8}$
+                          & \multicolumn{1}{c|}{$98.8_{\pm 0}$}                    & $83.1_{\pm 1.4}$                                                                           \\
+                          & $\geq$ B2                                              & \multicolumn{1}{c|}{$87.1_{\pm 0.7}$}                  & $77.0_{\pm 1.3}$
+                          & \multicolumn{1}{c|}{$86.0_{\pm 0.2}$}                  & $76.5_{\pm 0.6}$
+                          & \multicolumn{1}{c|}{$86.2_{\pm 0.2}$}                  & $80.2_{\pm 0.1}$                                                                           \\
+                          & $\leq$ A2                                              & \multicolumn{1}{c|}{$87.7_{\pm 0.2}$}                  & $78.5_{\pm 0.4}$
+                          & \multicolumn{1}{c|}{$81.5_{\pm 0.2}$}                  & $79.3_{\pm 0.2}$
+                          & \multicolumn{1}{c|}{$87.1_{\pm 0.2}$}                  & $78.5_{\pm 0.1}$                                                                           \\ \cline{2-8}
+                          & Thai                                                   & \multicolumn{1}{c|}{$\textcolor{red}{56.4_{\pm 1.0}}$} & $74.6_{\pm 4.9}$
+                          & \multicolumn{1}{c|}{$82.9_{\pm 0.9}$}                  & $82.4_{\pm 0.5}$
+                          & \multicolumn{1}{c|}{$97.2_{\pm 0.0}$}                  & $94.2_{\pm 0.6}$                                                                           \\
+                          & Spanish                                                & \multicolumn{1}{c|}{$82.6_{\pm 1.7}$}                  & $73.1_{\pm 6.8}$
+                          & \multicolumn{1}{c|}{$83.7_{\pm 0.4}$}                  & $73.6_{\pm 0.1}$
+                          & \multicolumn{1}{c|}{$91.1_{\pm 0.5}$}                  & $88.7_{\pm 0.3}$                                                                           \\ \cline{2-8}
+                          & Young                                                  & \multicolumn{1}{c|}{$68.9_{\pm 2.5}$}                  & $68.3_{\pm 1.1}$
+                          & \multicolumn{1}{c|}{$74.0_{\pm 0.5}$}                  & $\textcolor{red}{56.4_{\pm 0.3}}$
+                          & \multicolumn{1}{c|}{$75.0_{\pm 0.6}$}                  & $80.0_{\pm 0.0}$                                                                           \\ \cline{2-8}
+                          & Male                                                   & \multicolumn{1}{c|}{$69.5_{\pm 6.1}$}                  & $\textcolor{red}{51.7_{\pm 9.1}}$
+                          & \multicolumn{1}{c|}{$61.7_{\pm 0.7}$}                  & $65.2_{\pm 0.9}$
+                          & \multicolumn{1}{c|}{$94.8_{\pm 0.0}$}                  & $96.2_{\pm 0.1}$                                                                           \\ \hline
+    \end{tabular}
+    \caption{Accuracy of CAV in differentiating positive and negative training data across the three models. Range indicates $\pm \sigma$.}
+    \label{tab:CAV_accuracy_combined}
+\end{table}
 
-Compare model accuracy, CAV accuracy, and gradient distance from the original text-based model.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Concept} & \textbf{\% of positive targets} \\
+        \hline
+        $\geq$ C1        & 0.25                            \\
+        $\geq$ B2        & 19.7                            \\
+        $\leq$ A2        & 22.7                            \\ \hline
+        Thai             & 24.6                            \\
+        Spanish          & 44.8                            \\ \hline
+        Young            & 56.4                            \\ \hline
+        Male             & 47.6                            \\
+        \hline
+    \end{tabular}
+    \caption{Percentage of positive targets in training data}
+    \label{tab:pos_target}
+\end{table}
+
+The audio-based model generally achieves the highest CAV accuracy, with most concepts exceeding 80\%. In contrast, the text and feature-based models show similar performance, with accuracies ranging from 50\% to 95\%. This is likely because audio retains more speaker-specific information, such as pitch and accent, aiding CAV extraction and bias measurement.
+
+For balanced weighting, grade-related concepts exhibit higher accuracy for both positive and negative targets compared to non-grade concepts. This is likely because the neural network prioritizes performance-related information, which directly impacts grades, making CAV extraction more effective.
+
+Balanced weighting improves CAV performance for concepts with low positive target percentages, as shown in Table \ref{tab:pos_target}. For grade-related concepts ($\geq$ C1, $\geq$ B2, $\leq$ A2) and Thai, which have skewed positive target distributions (e.g., $\geq$ C1 at 0.25\%), balanced weighting significantly increases positive target accuracy, with most results increasing from $< 60\%$ to $> 60\%$. However, this comes at the cost of reduced negative target accuracy. This suggests that balanced weighting effectively enhances CAV accuracy for minority positive targets by addressing class imbalance.
+
+Overall, most CAVs extracted from the three models are able to differentiate the positive and negative targets with reasonable accuracy. For balanced weighting, most concepts are $> 60\%$ accuracy, while those without weighting have more CAVs, particularly grade-related positive concepts, that could not reach $60\%$ accuracy. Generally, a higher accuracy linear classifier should be able to represent the concept better with the CAV. This indicates that the CAVs are capable of measuring bias in the models. The result also helps to experiment whether CAV accuracy correlates with the sensitivity of CAV to measure bias.
+
+\subsection{Gradient Distance for Bias} \label{sec:gradient_distance}
+
+Table \ref{tab:gradient_distance_combined} presents the gradient distance $\mathcal{B}^{(c)}_{\nabla}$ and $\mathcal{B}^{(c)}_{gr}$ for the three models on the test data. The value $< 0.9$ or $> 1.1$ are highlighted in red to indicate presence of bias.
+
+\begin{table}[H]
+    \begin{tabular}{|c|c|cc|cc|cc|}
+        \hline
+        \multirow{2}{*}{}                                                        & \multirow{2}{*}{\textbf{Concept}} & \multicolumn{2}{c|}{\textbf{Text}}                         & \multicolumn{2}{c|}{\textbf{Feature}} & \multicolumn{2}{c|}{\textbf{Audio}}                                                                                                                                                                   \\ \cline{3-8}
+                                                                                 &                                   & \multicolumn{1}{c|}{\textbf{$\mathcal{B}^{(c)}_{\nabla}$}} & \textbf{ $\mathcal{B}^{(c)}_{gr}$}    & \multicolumn{1}{c|}{\textbf{$\mathcal{B}^{(c)}_{\nabla}$}} & \textbf{ $\mathcal{B}^{(c)}_{gr}$}   & \multicolumn{1}{c|}{\textbf{$\mathcal{B}^{(c)}_{\nabla}$}} & \textbf{ $\mathcal{B}^{(c)}_{gr}$}   \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{No weighting}}}       & $\geq$ C1                         & \multicolumn{1}{c|}{\textcolor{red}{$0.889_{\pm 0.068}$}}  & \textcolor{red}{$0.890_{\pm 0.068}$}  & \multicolumn{1}{c|}{\textcolor{red}{$0.412_{\pm 0.097}$}}  & \textcolor{red}{$0.534_{\pm 0.072}$} & \multicolumn{1}{c|}{\textcolor{red}{$0.808_{\pm 0.003}$}}  & \textcolor{red}{$0.820_{\pm 0.004}$} \\
+                                                                                 & $\geq$ B2                         & \multicolumn{1}{c|}{\textcolor{red}{$0.765_{\pm 0.022}$}}  & \textcolor{red}{$0.766_{\pm 0.021}$}  & \multicolumn{1}{c|}{\textcolor{red}{$0.657_{\pm 0.052}$}}  & \textcolor{red}{$0.720_{\pm 0.040}$} & \multicolumn{1}{c|}{\textcolor{red}{$0.827_{\pm 0.027}$}}  & \textcolor{red}{$0.838_{\pm 0.024}$} \\
+                                                                                 & $\leq$ A2                         & \multicolumn{1}{c|}{\textcolor{red}{$1.230_{\pm 0.017}$}}  & \textcolor{red}{$1.228_{\pm 0.017}$}  & \multicolumn{1}{c|}{\textcolor{red}{$1.192_{\pm 0.035}$}}  & \textcolor{red}{$1.160_{\pm 0.028}$} & \multicolumn{1}{c|}{\textcolor{red}{$1.127_{\pm 0.030}$}}  & \textcolor{red}{$1.118_{\pm 0.027}$} \\ \cline{2-8}
+                                                                                 & Thai                              & \multicolumn{1}{c|}{$1.052_{\pm 0.017}$}                   & $1.052_{\pm 0.012}$                   & \multicolumn{1}{c|}{$1.035_{\pm 0.010}$}                   & $1.029_{\pm 0.008}$                  & \multicolumn{1}{c|}{$1.016_{\pm 0.013}$}                   & $1.015_{\pm 0.012}$                  \\
+                                                                                 & Spanish                           & \multicolumn{1}{c|}{$0.978_{\pm 0.010}$}                   & $0.979_{\pm 0.010}$                   & \multicolumn{1}{c|}{$0.959_{\pm 0.016}$}                   & $0.967_{\pm 0.013}$                  & \multicolumn{1}{c|}{$0.993_{\pm 0.004}$}                   & $0.994_{\pm 0.004}$                  \\ \cline{2-8}
+                                                                                 & Young                             & \multicolumn{1}{c|}{$0.952_{\pm 0.015}$}                   & $0.952_{\pm 0.015}$                   & \multicolumn{1}{c|}{$0.924_{\pm 0.022}$}                   & $0.936_{\pm 0.018}$                  & \multicolumn{1}{c|}{$0.960_{\pm 0.021}$}                   & $0.962_{\pm 0.020}$                  \\ \cline{2-8}
+                                                                                 & Male                              & \multicolumn{1}{c|}{$1.009_{\pm 0.019}$}                   & $1.009_{\pm 0.019}$                   & \multicolumn{1}{c|}{$0.963_{\pm 0.020}$}                   & $0.968_{\pm 0.017}$                  & \multicolumn{1}{c|}{$1.008_{\pm 0.005}$}                   & $1.008_{\pm 0.005}$                  \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{Balanced weighting}}} & $\geq$ C1                         & \multicolumn{1}{c|}{\textcolor{red}{$0.811_{\pm 0.060}$}}  & \textcolor{red}{$0.812_{\pm 0.059}$}  & \multicolumn{1}{c|}{\textcolor{red}{$0.453_{\pm 0.161}$}}  & \textcolor{red}{$0.563_{\pm 0.129}$} & \multicolumn{1}{c|}{\textcolor{red}{$0.863_{\pm 0.020}$}}  & \textcolor{red}{$0.872_{\pm 0.018}$} \\
+                                                                                 & $\geq$ B2                         & \multicolumn{1}{c|}{\textcolor{red}{$0.746_{\pm 0.021}$}}  & \textcolor{red}{$0.747_{\pm 0.021}$}  & \multicolumn{1}{c|}{\textcolor{red}{$0.715_{\pm 0.045}$}}  & \textcolor{red}{$0.767_{\pm 0.034}$} & \multicolumn{1}{c|}{\textcolor{red}{$0.833_{\pm 0.017}$}}  & \textcolor{red}{$0.843_{\pm 0.015}$} \\
+                                                                                 & $\leq$ A2                         & \multicolumn{1}{c|}{\textcolor{red}{$1.255_{\pm 0.038}$}}  & \textcolor{red}{$1.254_{\pm 0.038}$}  & \multicolumn{1}{c|}{\textcolor{red}{$1.147_{\pm 0.038}$}}  & \textcolor{red}{$1.122_{\pm 0.031}$} & \multicolumn{1}{c|}{\textcolor{red}{$1.165_{\pm 0.036}$}}  & \textcolor{red}{$1.155_{\pm 0.033}$} \\ \cline{2-8}
+                                                                                 & Thai                              & \multicolumn{1}{c|}{$1.061_{\pm 0.014}$}                   & $1.061_{\pm 0.014}$                   & \multicolumn{1}{c|}{$1.036_{\pm 0.015}$}                   & $1.030_{\pm 0.012}$                  & \multicolumn{1}{c|}{$1.018_{\pm 0.014}$}                   & $1.017_{\pm 0.013}$                  \\
+                                                                                 & Spanish                           & \multicolumn{1}{c|}{$0.976_{\pm 0.012}$}                   & $0.976_{\pm 0.012}$                   & \multicolumn{1}{c|}{$0.960_{\pm 0.015}$}                   & $0.987_{\pm 0.012}$                  & \multicolumn{1}{c|}{$0.995_{\pm 0.005}$}                   & $0.995_{\pm 0.005}$                  \\ \cline{2-8}
+                                                                                 & Young                             & \multicolumn{1}{c|}{$0.947_{\pm 0.013}$}                   & $0.947_{\pm 0.013}$                   & \multicolumn{1}{c|}{$0.931_{\pm 0.026}$}                   & $0.942_{\pm 0.021}$                  & \multicolumn{1}{c|}{$0.960_{\pm 0.019}$}                   & $0.962_{\pm 0.018}$                  \\ \cline{2-8}
+                                                                                 & Male                              & \multicolumn{1}{c|}{$1.011_{\pm 0.019}$}                   & $1.011_{\pm 0.019}$                   & \multicolumn{1}{c|}{$0.963_{\pm 0.020}$}                   & $0.968_{\pm 0.017}$                  & \multicolumn{1}{c|}{$1.007_{\pm 0.004}$}                   & $1.007_{\pm 0.004}$                  \\ \hline
+    \end{tabular}
+    \caption{$\mathcal{B}^{(c)}_{\nabla}$ and $\mathcal{B}^{(c)}_{gr}$ for models on test data. Range indicates $\pm \sigma$.}
+    \label{tab:gradient_distance_combined}
+\end{table}
+
+Overall, the three models are all capable to detect that grade concepts ($\geq$ C1, $\geq$ B2, $\leq$ A2) are biased, and non-grade concepts (Thai, Spanish, Young, Male) are not biased. The result is expected as the grade concepts are directly related to the score output, and the non-grade concepts are not related to the score output. Hence, only the grade-related CAV should be align to the score gradient direction.
+
+Comparing the three models, the feature-based model is able to show the greatest deviation of $\mathcal{B}^{(c)}_{\nabla}$ and $\mathcal{B}^{(c)}_{gr}$ from 1 for grade-related concepts, despite the accuracy of the CAV from audio-based model being the highest. This indicates that the CAV accuracy does not necessarily correlate with the sensitivity to measure bias in the model.
+
+Comparing the results with no weighting and balanced weighting, despite the CAV accuracy being higher for balanced weighting, the measurement result of $\mathcal{B}^{(c)}_{\nabla}$ and $\mathcal{B}^{(c)}_{gr}$ are very similar. This could be likely because the CAV direction $\boldsymbol{d^{(c)}}$ for balanced and no weighting are similar, and the main difference affecting the CAV accuracy is the bias term $b$. Hence, the use of weighting does not affect the sensitivity to bias measurement.
+
+The individual CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$, averaged across seeds, is also calculated. The graph is plotted against candidates’ ensemble predicted score in Figure \ref{fig:gradient_distance_text}, \ref{fig:gradient_distance_feature} and \ref{fig:gradient_distance_audio}.
+
+\begin{figure}[H]
+    \centering
+    % First pair
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.48\linewidth]{text_none.png}
+        \hfill
+        \includegraphics[width=0.48\linewidth]{text_balanced.png}
+        \caption{CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$ for text-based model}
+        \label{fig:gradient_distance_text}
+    \end{minipage}
+    \hfill
+    % Second pair
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.48\linewidth]{feature_none.png}
+        \hfill
+        \includegraphics[width=0.48\linewidth]{feature_balanced.png}
+        \caption{CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$ for feature-based model}
+        \label{fig:gradient_distance_feature}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.5\textwidth}{!}{
+        \includegraphics[width=0.48\linewidth]{audio_none.png}
+        \hfill
+        \includegraphics[width=0.48\linewidth]{audio_balanced.png}
+    }
+    \caption{CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$ for audio-based model}
+    \label{fig:gradient_distance_audio}
+\end{figure}
+
+The pattern between those from no weighting and balanced weighting is similar, which is align with the results in Table \ref{tab:gradient_distance_combined}. However, the patterns across the models show differences. For feature-based model, the pattern formed an overall fan-like shape. Each plot is formed by thick line with a slope, diverging from close to 1 for low scores to value deviating from 1 for high scores.In contrast, both patterns of gradient distance for text-based and audio-based models form a thin, horizontal like across different scores. The gap between the grade-related concepts from 1 is also wider for feature-based model than the other two models, making it more sensitive to the bias.
+
+Overall, while all the models are capable of detecting biases, the patterns formed from $\mathcal{B}^{(ci)}_{gr}$ are different across the models.
+
+\subsection{Model Biasing} \label{sec:model_biasing}
+The results in the previous section (Section \ref{sec:gradient_distance}) show that the three models are able to detect the bias from grade-related concepts. However, for non-grade related concepts, it is unsure whether the models are unbiased towards those concepts, or the CAVs are not able to detect the bias. To further investigate this, models biased towards the non-grade concepts (Thai, Spanish, Young, Male) are trained.
+
+For each biased model, the CAV are used to detected the bias for the concept being biased through computing $\mathcal{B}^{(ci)}_{gr}$. The plot of $\mathcal{B}^{(ci)}_{gr}$ against candidates’ ensemble predicted score of the biased concepts are shown in figure \ref{fig:grad_text} to \ref{fig:grad_audio_balanced}, comparing the results with the original model without biasing.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/spanish_part1_layer1.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/thai_part1_layer1.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/male_part1_layer1.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/young_part1_layer1.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for text-based model with no weighting}
+    \label{fig:grad_text}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/spanish_part1_layer1_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/thai_part1_layer1_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/male_part1_layer1_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Text/young_part1_layer1_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for text-based model with balanced weighting}
+    \label{fig:grad_text_balanced}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/spanish_part1_input_layer.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/thai_part1_input_layer.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/male_part1_input_layer.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/young_part1_input_layer.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for feature-based model with no weighting}
+    \label{fig:grad_feature}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/spanish_part1_input_layer_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/thai_part1_input_layer_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/male_part1_input_layer_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Feature/young_part1_input_layer_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for feature-based model with balanced weighting}
+    \label{fig:grad_feature_balanced}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/spanish_part1_dense.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/thai_part1_dense.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/male_part1_dense.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/young_part1_dense.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for text-based model with no weighting}
+    \label{fig:grad_audio}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/spanish_part1_dense_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/thai_part1_dense_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/male_part1_dense_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{Audio/young_part1_dense_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for audio-based model with balanced weighting}
+    \label{fig:grad_audio_balanced}
+\end{figure}
+
+Firstly, as before, it is observed that the pattern of $\mathcal{B}^{(ci)}_{gr}$ between graphs without weighting and balanced weighting is similar. This indicates that either method is able to detect the bias equally for the concepts.
+
+In addition, the change in $\mathcal{B}^{(ci)}_{gr}$ within L1-related concepts (Thai, Spanish), particularly Spanish, is more significant compared to other concepts across all three models. For non-L1 concepts (Male, Young), the change is negligible in text and audio-based models, hence the CAVs are actually unable to detect biases presence for those concepts. It is interesting to observe that the text-based model has its $\mathcal{B}^{(ci)}_{gr}$ deviating more from 1 for the original model than the biased version, which might indicate the initial model has slight bias towards Thai speaker. This reflects that CAVs are better in detecting bias presence for L1-related concepts than non-L1 concepts in these models.
+
+Furthermore, the change in $\mathcal{B}^{(ci)}_{gr}$ for the feature-based model is more significant than the text-based and audio-based models, with the gap of $\mathcal{B}^{(ci)}_{gr}$ between the original and bias models being the widest. This indicates that the feature-based model is more sensitive to the bias presence, and the CAVs are able to detect the bias presence better.
+
+Overall, this shows that CAV can best detect bias towards L1-concepts, particularly Spanish L1-speaker in feature-based models compared to other existing biases. It is unable to detect non-L1-related biases in text and audio-based models.
+
+\section{Factor Isolation} \label{sec:factor_isolation}
+This section presents the result of the experiments performed on the modified models to isolate the effect of different factors on the bias measurement. The previous section (Section \ref{sec:bias_detection}) shows that different plots of $\mathcal{B}^{(ci)}_{gr}$ against predicted ensemble score. While feature-based model display a fan-shaped, thick and diverging pattern, text and audio based model has a thin, horizontal pattern. However, the models differ in network architecture, model type, and input type. Hence, these respective factors are evaluated to uncover the core factor affecting the pattern. The results are compared with the original models to see the changes in pattern.
+
+\subsection{Network Architecture}
+The first experiment changes the network of the feature-based model to the network from the text-based model (Figure \ref{fig:bert_like}). The changes including the node and layer number, activation function, and dropout rate, with the feature vector retained as input. This is to see if the architecture of the model affects the bias measurement.
+
+The accuracy of the modified feature-based model is compared with the original feature-based model, as shown in Table \ref{tab:model_accuracy_bert_like}. The coefficients for the linear calibration of both models are presented in Table \ref{tab:linear_regression_coefficients_bert_like} as a reference. The results show that the modified model is decent and even perform slightly better than the original feature-based model, indicating that the architecture change does not affect the model performance significantly, hence reliable for CAV extraction.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|lc|c|c|c|c|}
+        \hline
+        \multicolumn{2}{|l|}{\textbf{}}                                  & \textbf{RMSE}         & \textbf{PCC} & \textbf{\textless 0.5} & \textbf{\textless 1}        \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Modified Network}}} & \textbf{Uncalibrated} & 0.669        & 0.826                  & 57.1                 & 86.8 \\ \cline{2-6}
+        \multicolumn{1}{|l|}{}                                           & \textbf{Calibrated}   & 0.631        & 0.826                  & 59.4                 & 88.8 \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Original Network}}} & \textbf{Uncalibrated} & 0.694        & 0.821                  & 55.3                 & 83.4 \\ \cline{2-6}
+        \multicolumn{1}{|l|}{}                                           & \textbf{Calibrated}   & 0.638        & 0.821                  & 56.6                 & 87.9 \\ \hline
+    \end{tabular}
+    \caption{Model accuracy for the feature-based model with the original and modified network architecture, both calibrated and uncalibrated.}
+    \label{tab:model_accuracy_bert_like}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{}                 & \textbf{Slope (m)} & \textbf{Intercept (c)} \\ \hline
+        \textbf{Modified Network} & 1.32               & -1.14                  \\ \hline
+        \textbf{Original Network} & 1.42               & -1.45                  \\ \hline
+    \end{tabular}
+    \caption{Linear calibration coefficients for the feature-based model with the original and modified network architecture}
+    \label{tab:linear_regression_coefficients_bert_like}
+\end{table}
+
+The accuracy of the CAVs extracted from the modified feature-based model is shown in Table \ref{tab:CAV_accuracy_bert_like}. The results show that the CAVs from the modified model are able to differentiate the positive and negative targets with reasonable accuracy, and in fact slightly better than the original feature-based model. Hence, it could be used to measure bias reliably.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|cc|cc|}
+        \hline
+        \multirow{2}{*}{} & \multirow{2}{*}{\textbf{Concept}} & \multicolumn{2}{c|}{\textbf{Modified Network}}         & \multicolumn{2}{c|}{\textbf{Original Network}}                                                                                              \\ \cline{3-6}
+                          &                                   & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}                                   & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}                      \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{No weighting}}}
+                          & $\geq$ C1                         & \multicolumn{1}{c|}{$\textcolor{red}{1.5_{\pm 0.9}}$}  & $1_{\pm 0}$                                    & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & $1_{\pm 0}$                       \\
+                          & $\geq$ B2                         & \multicolumn{1}{c|}{$\textcolor{red}{56.1_{\pm 0.3}}$} & $94.0_{\pm 0.1}$                               & \multicolumn{1}{c|}{$\textcolor{red}{48.9_{\pm 1.7}}$} & $95.4_{\pm 0.1}$                  \\
+                          & $\leq$ A2                         & \multicolumn{1}{c|}{$\textcolor{red}{52.7_{\pm 0.4}}$} & $93.0_{\pm 0.1}$                               & \multicolumn{1}{c|}{$\textcolor{red}{44.0_{\pm 0.8}}$} & $94.4_{\pm 0.1}$                  \\ \cline{2-6}
+                          & Thai                              & \multicolumn{1}{c|}{$74.9_{\pm 0.8}$}                  & $95.8_{\pm 0.1}$                               & \multicolumn{1}{c|}{$\textcolor{red}{48.9_{\pm 3.5}}$} & $95.2_{\pm 0.2}$                  \\
+                          & Spanish                           & \multicolumn{1}{c|}{$86.2_{\pm 0.2}$}                  & $88.2_{\pm 0.1}$                               & \multicolumn{1}{c|}{$79.4_{\pm 0.6}$}                  & $78.6_{\pm 0.7}$                  \\ \cline{2-6}
+                          & Young                             & \multicolumn{1}{c|}{$82.3_{\pm 0.1}$}                  & $\textcolor{red}{54.1_{\pm 0.3}}$              & \multicolumn{1}{c|}{$83.8_{\pm 0.2}$}                  & $\textcolor{red}{41.5_{\pm 0.7}}$ \\
+                          & Male                              & \multicolumn{1}{c|}{$69.1_{\pm 0.5}$}                  & $77.3_{\pm 0.2}$                               & \multicolumn{1}{c|}{$\textcolor{red}{47.1_{\pm 2.4}}$} & $75.0_{\pm 0.3}$                  \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{Balanced weighting}}}
+                          & $\geq$ C1                         & \multicolumn{1}{c|}{$89.5_{\pm 1.7}$}                  & $77.0_{\pm 1.6}$                               & \multicolumn{1}{c|}{$94.0_{\pm 0.5}$}                  & $76.9_{\pm 1.8}$                  \\
+                          & $\geq$ B2                         & \multicolumn{1}{c|}{$85.9_{\pm 0.2}$}                  & $77.6_{\pm 0.2}$                               & \multicolumn{1}{c|}{$86.0_{\pm 0.2}$}                  & $76.5_{\pm 0.6}$                  \\
+                          & $\leq$ A2                         & \multicolumn{1}{c|}{$84.2_{\pm 0.2}$}                  & $78.9_{\pm 0.2}$                               & \multicolumn{1}{c|}{$81.5_{\pm 0.2}$}                  & $79.3_{\pm 0.2}$                  \\ \cline{2-6}
+                          & Thai                              & \multicolumn{1}{c|}{$90.0_{\pm 0.3}$}                  & $89.6_{\pm 0.2}$                               & \multicolumn{1}{c|}{$82.9_{\pm 0.9}$}                  & $82.4_{\pm 0.5}$                  \\
+                          & Spanish                           & \multicolumn{1}{c|}{$88.7_{\pm 0.1}$}                  & $85.7_{\pm 0.2}$                               & \multicolumn{1}{c|}{$83.7_{\pm 0.4}$}                  & $73.6_{\pm 0.1}$                  \\ \cline{2-6}
+                          & Young                             & \multicolumn{1}{c|}{$74.2_{\pm 0.2}$}                  & $65.9_{\pm 0.1}$                               & \multicolumn{1}{c|}{$74.0_{\pm 0.5}$}                  & $\textcolor{red}{56.4_{\pm 0.3}}$ \\
+                          & Male                              & \multicolumn{1}{c|}{$74.0_{\pm 0.6}$}                  & $72.6_{\pm 0.7}$                               & \multicolumn{1}{c|}{$61.7_{\pm 0.7}$}                  & $65.2_{\pm 0.9}$                  \\ \hline
+    \end{tabular}
+    \caption{Accuracy of CAV in differentiating positive and negative training data for the feature-based model with the original and modified network architecture. Range indicates $\pm \sigma$.}
+    \label{tab:CAV_accuracy_bert_like}
+\end{table}
+
+Finally, Figure \ref{fig:gradient_distance_bert_like_modified} and \ref{fig:gradient_distance_bert_like_original} compare the changes of $\mathcal{B}^{(ci)}_{gr}$ against predicted ensemble score for the modified and original feature-based model, respectively. The values of $\mathcal{B}^{(ci)}_{gr}$ are different, with the fan-shape pattern being less wide. Some non-grade concepts, such as Thai, are measured to be slightly biased in the modified model. However, the essence of a fan-shaped pattern with diverging thick lines is still present. This shows that the change in architecture could affect the value of the bias measurement, however the overall pattern of $\mathcal{B}^{(ci)}_{gr}$ 's plot remain the same. This concludes that the network architecture does not affect the gradient distance pattern.
+
+\begin{figure}[H]
+    \centering
+    % First pair
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.45\linewidth]{BERT-like/modified_bias_part1_input_layer.png}
+        \hfill
+        \includegraphics[width=0.48\linewidth]{BERT-like/modified_bias_part1_input_layer_balanced.png}
+        \caption{CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$ for feature-based model with modified network architecture}
+        \label{fig:gradient_distance_bert_like_modified}
+    \end{minipage}
+    \hfill
+    % Second pair
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.45\linewidth]{BERT-like/original_bias_part1_input_layer.png}
+        \hfill
+        \includegraphics[width=0.48\linewidth]{BERT-like/original_bias_part1_input_layer_balanced.png}
+        \caption{CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$ for feature-based model with original network architecture}
+        \label{fig:gradient_distance_bert_like_original}
+    \end{minipage}
+\end{figure}
+
 
 \subsection{Model Type}
-Change feature-based model from DDN to DNN,.
+The second experiment changes the feature-based model from DNN to DDN (Figure \ref{fig:dnn_like}). The loss function in training is subsequently updated from NLL to MSE. This is to see if the model type affects the bias measurement.
 
-Compare model accuracy, CAV accuracy, and gradient distance from the original feature-based model.
+The accuracy of the modified feature-based model is compared with the original feature-based model, as shown in Table \ref{tab:model_accuracy_dnn_like}. The coefficients for the linear calibration of both models are presented in Table \ref{tab:linear_regression_coefficients_dnn_like} as a reference. The results show that the modified model is decent and even perform slightly better than the original feature-based model, indicating that the architecture change does not affect the model performance significantly, hence reliable for CAV extraction.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|c|c|c|c|}
+        \hline
+        \multicolumn{2}{|l|}{\textbf{}} & \textbf{RMSE} & \textbf{PCC} & \textbf{\textless 0.5} & \textbf{\textless 1}          \\ \hline
+        \multirow{2}{*}{\textbf{DNN}}
+                                        & Uncalibrated  & $0.688$      & $0.822$                & $55.2$               & $84.4$ \\ \cline{2-6}
+                                        & Calibrated    & $0.637$      & $0.822$                & $57.1$               & $88.2$ \\ \hline
+        \multirow{2}{*}{\textbf{DDN}}
+                                        & Uncalibrated  & $0.694$      & $0.821$                & $55.3$               & $83.4$ \\ \cline{2-6}
+                                        & Calibrated    & $0.638$      & $0.821$                & $56.6$               & $87.9$ \\ \hline
+    \end{tabular}
+    \caption{Model accuracy for the feature-based model with DNN and DDN, both calibrated and uncalibrated.}
+    \label{tab:model_accuracy_dnn_like}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{}               & \textbf{Slope (m)} & \textbf{Intercept (c)} \\ \hline
+        \textbf{Modified (DNN)} & $1.393$            & $-1.392$               \\ \hline
+        \textbf{Original (DDN)} & $1.420$            & $-1.451$               \\ \hline
+    \end{tabular}
+    \caption{Linear calibration coefficients for the original (DNN) and modified (DDN) feature-based model}
+    \label{tab:linear_regression_coefficients_dnn_like}
+\end{table}
+
+The accuracy of the CAVs extracted from the modified feature-based model is shown in Table \ref{tab:CAV_accuracy_bert_like}. The results show that the CAVs from the modified DNN model have nearly identical performance as the original DDN model. Hence, it could be used to measure bias reliably.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|cc|cc|}
+        \hline
+        \multirow{2}{*}{} & \multirow{2}{*}{\textbf{Concept}} & \multicolumn{2}{c|}{\textbf{DNN}}                      & \multicolumn{2}{c|}{\textbf{DDN}}                                                                                              \\ \cline{3-6}
+                          &                                   & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}                      & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}                      \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{No weighting}}}
+                          & $\geq$ C1                         & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & ${1_{\pm 0}}$                     & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & $1_{\pm 0}$                       \\
+                          & $\geq$ B2                         & \multicolumn{1}{c|}{$\textcolor{red}{48.7_{\pm 1.5}}$} & $95.5_{\pm 0.1}$                  & \multicolumn{1}{c|}{$\textcolor{red}{48.9_{\pm 1.7}}$} & $95.4_{\pm 0.1}$                  \\
+                          & $\leq$ A2                         & \multicolumn{1}{c|}{$\textcolor{red}{43.5_{\pm 0.9}}$} & $94.4_{\pm 0.1}$                  & \multicolumn{1}{c|}{$\textcolor{red}{44.0_{\pm 0.8}}$} & $94.4_{\pm 0.1}$                  \\ \cline{2-6}
+                          & Thai                              & \multicolumn{1}{c|}{$\textcolor{red}{50.0_{\pm 2.6}}$} & $95.1_{\pm 0.2}$                  & \multicolumn{1}{c|}{$\textcolor{red}{48.9_{\pm 3.5}}$} & $95.2_{\pm 0.2}$                  \\
+                          & Spanish                           & \multicolumn{1}{c|}{$79.3_{\pm 0.7}$}                  & $78.8_{\pm 0.7}$                  & \multicolumn{1}{c|}{$79.4_{\pm 0.6}$}                  & $78.6_{\pm 0.7}$                  \\ \cline{2-6}
+                          & Young                             & \multicolumn{1}{c|}{$83.7_{\pm 0.2}$}                  & $\textcolor{red}{41.9_{\pm 0.6}}$ & \multicolumn{1}{c|}{$83.8_{\pm 0.2}$}                  & $\textcolor{red}{41.5_{\pm 0.7}}$ \\ \cline{2-6}
+                          & Male                              & \multicolumn{1}{c|}{$\textcolor{red}{47.5_{\pm 2.8}}$} & $78.0_{\pm 1.0}$                  & \multicolumn{1}{c|}{$\textcolor{red}{47.1_{\pm 2.4}}$} & $78.0_{\pm 0.4}$                  \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{Balanced weighting}}}
+                          & $\geq$ C1                         & \multicolumn{1}{c|}{$93.2_{\pm 1.0}$}                  & $77.1_{\pm 1.2}$                  & \multicolumn{1}{c|}{$94.0_{\pm 0.5}$}                  & $76.9_{\pm 1.8}$                  \\
+                          & $\geq$ B2                         & \multicolumn{1}{c|}{$86.0_{\pm 0.1}$}                  & $76.5_{\pm 0.6}$                  & \multicolumn{1}{c|}{$86.0_{\pm 0.2}$}                  & $76.5_{\pm 0.6}$                  \\
+                          & $\leq$ A2                         & \multicolumn{1}{c|}{$81.7_{\pm 0.2}$}                  & $79.4_{\pm 0.2}$                  & \multicolumn{1}{c|}{$81.5_{\pm 0.2}$}                  & $79.3_{\pm 0.2}$                  \\ \cline{2-6}
+                          & Thai                              & \multicolumn{1}{c|}{$83.3_{\pm 1.0}$}                  & ${82.4_{\pm 0.5}}$                & \multicolumn{1}{c|}{$82.9_{\pm 0.9}$}                  & $82.4_{\pm 0.5}$                  \\
+                          & Spanish                           & \multicolumn{1}{c|}{$83.6_{\pm 0.5}$}                  & ${73.9_{\pm 1.0}}$                & \multicolumn{1}{c|}{$83.7_{\pm 0.4}$}                  & ${73.6_{\pm 0.1}}$                \\ \cline{2-6}
+                          & Young                             & \multicolumn{1}{c|}{$73.9_{\pm 0.3}$}                  & $\textcolor{red}{56.5_{\pm 0.2}}$ & \multicolumn{1}{c|}{$74.0_{\pm 0.5}$}                  & $\textcolor{red}{56.4_{\pm 0.3}}$ \\ \cline{2-6}
+                          & Male                              & \multicolumn{1}{c|}{$62.1_{\pm 0.4}$}                  & $64.7_{\pm 1.0}$                  & \multicolumn{1}{c|}{$61.7_{\pm 0.7}$}                  & $65.2_{\pm 0.9}$                  \\ \hline
+    \end{tabular}
+    \caption{Accuracy of CAV in differentiating positive and negative training data for the original (DNN) and modified (DDN) feature-based model. Range indicates $\pm \sigma$.}
+    \label{tab:CAV_accuracy_dnn_like}
+\end{table}
+
+Finally, Figure \ref{fig:gradient_distance_dnn_like_modified} and \ref{fig:gradient_distance_dnn_like_original} compare the changes of $\mathcal{B}^{(ci)}_{gr}$ against predicted ensemble score for the modified DNN and original DDN feature-based model, respectively. The pattern are nearly identical, which concludes that the model type does not affect the gradient distance pattern.
+
+\begin{figure}[H]
+    \centering
+    % First pair
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.48\linewidth]{DNN-like/DNN_bias_part1_input_layer.png}
+        \hfill
+        \includegraphics[width=0.48\linewidth]{DNN-like/DNN_bias_part1_input_layer_balanced.png}
+        \caption{CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$ for the modified DNN feature-based model}
+        \label{fig:gradient_distance_dnn_like_modified}
+    \end{minipage}
+    \hfill
+    % Second pair
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.48\linewidth]{DNN-like/DDN_bias_part1_input_layer.png}
+        \hfill
+        \includegraphics[width=0.48\linewidth]{DNN-like/DNN_bias_part1_input_layer_balanced.png}
+        \caption{CAV gradient distance $\mathcal{B}^{(ci)}_{gr}$ for the original DDN feature-based model}
+        \label{fig:gradient_distance_dnn_like_original}
+    \end{minipage}
+\end{figure}
 
 \subsection{Nature of Input}
-Concatenate input with both feature and attention from text, retain text-based architecture.
+The third experiment concatenated the feature vectors to the original attention vectors created by BERT encoder, before feeding into the text-based system (Figure \ref{fig:deep_fusion}). In other words, a deep-fusion model with text and feature is crated, retaining architecture of text-based model. This is to see if the nature of input affects the bias measurement.
 
-Compare model accuracy, CAV accuracy, and gradient distance from the original text-based model.
+The accuracy of the modified text-based model is compared with the original text-based model, as shown in Table \ref{tab:model_accuracy_deep_fusion}. The coefficients for the linear calibration of both models are presented in Table \ref{tab:linear_regression_coefficients_dnn_like} as a reference. The results show that the modified model is decent and even perform slightly better than the original feature-based model, indicating that the architecture change does not affect the model performance significantly, hence reliable for CAV extraction.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|c|c|c|c|}
+        \hline
+        \multicolumn{2}{|l|}{\textbf{}} & \textbf{RMSE} & \textbf{PCC} & \textbf{\textless 0.5} & \textbf{\textless 1}          \\ \hline
+        \multirow{2}{*}{\textbf{Modified (With Feature)}}
+                                        & Uncalibrated  & $0.681$      & $0.831$                & $55.3$               & $84.4$ \\ \cline{2-6}
+                                        & Calibrated    & $0.627$      & $0.837$                & $58.1$               & $88.3$ \\ \hline
+        \multirow{2}{*}{\textbf{Original (Without Feature)}}
+                                        & Uncalibrated  & $0.678$      & $0.836$                & $55.6$               & $84.8$ \\ \cline{2-6}
+                                        & Calibrated    & $0.627$      & $0.837$                & $58.1$               & $88.3$ \\ \hline
+    \end{tabular}
+    \caption{Model accuracy for the text-based model with and without feature vector, both calibrated and uncalibrated.}
+    \label{tab:model_accuracy_deep_fusion}
+\end{table}
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{}                           & \textbf{Slope (m)} & \textbf{Intercept (c)} \\ \hline
+        \textbf{Modified (With Feature)}    & $1.168$            & $-0.724$               \\ \hline
+        \textbf{Original (Without Feature)} & $1.187$            & $-0.798$               \\ \hline
+    \end{tabular}
+    \caption{Linear calibration coefficients text-based model with and without feature vector}
+    \label{tab:linear_regression_coefficients_deep_fusion}
+\end{table}
+
+The accuracy of the CAVs extracted from the modified feature-based model is shown in Table \ref{tab:CAV_accuracy_bert_like}. The results show that the CAVs from the modified DNN model have nearly identical performance as the original DDN model. Hence, it could be used to measure bias reliably.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|cc|cc|}
+        \hline
+        \multirow{2}{*}{} & \multirow{2}{*}{\textbf{Concept}} & \multicolumn{2}{c|}{\shortstack{\textbf{Modified}                                                                                                                                       \\\textbf{(With Feature)}}} & \multicolumn{2}{c|}{\shortstack{\textbf{Original}\\\textbf{(Without Feature)}}}                                                                                              \\ \cline{3-6}
+                          &                                   & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}                      & \multicolumn{1}{c|}{\textbf{+ve}}                      & \textbf{-ve}                      \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{No weighting}}}
+                          & $\geq$ C1                         & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & $1_{\pm 0}$                       & \multicolumn{1}{c|}{$\textcolor{red}{0_{\pm 0}}$}      & $1_{\pm 0}$                       \\
+                          & $\geq$ B2                         & \multicolumn{1}{c|}{$\textcolor{red}{52.0_{\pm 0.3}}$} & $95.5_{\pm 0.0}$                  & \multicolumn{1}{c|}{$\textcolor{red}{50.6_{\pm 2.0}}$} & $95.3_{\pm 0.2}$                  \\
+                          & $\leq$ A2                         & \multicolumn{1}{c|}{$\textcolor{red}{57.6_{\pm 0.2}}$} & $93.8_{\pm 0.1}$                  & \multicolumn{1}{c|}{$\textcolor{red}{58.2_{\pm 1.3}}$} & $93.3_{\pm 0.5}$                  \\ \cline{2-6}
+                          & Thai                              & \multicolumn{1}{c|}{$67.2_{\pm 1.4}$}                  & $96.5_{\pm 0.2}$                  & \multicolumn{1}{c|}{$\textcolor{red}{50.0_{\pm 2.6}}$} & $95.1_{\pm 0.2}$                  \\
+                          & Spanish                           & \multicolumn{1}{c|}{$84.7_{\pm 1.2}$}                  & $85.4_{\pm 1.4}$                  & \multicolumn{1}{c|}{$76.1_{\pm 4.1}$}                  & $79.0_{\pm 5.3}$                  \\ \cline{2-6}
+                          & Young                             & \multicolumn{1}{c|}{$81.8_{\pm 0.6}$}                  & $\textcolor{red}{54.6_{\pm 0.4}}$ & \multicolumn{1}{c|}{$79.9_{\pm 1.3}$}                  & $\textcolor{red}{55.6_{\pm 1.6}}$ \\ \cline{2-6}
+                          & Male                              & \multicolumn{1}{c|}{$\textcolor{red}{59.4_{\pm 1.3}}$} & $74.5_{\pm 0.6}$                  & \multicolumn{1}{c|}{$\textcolor{red}{40.7_{\pm 6.2}}$} & $79.7_{\pm 2.7}$                  \\ \hline
+        \multirow{7}{*}{\rotatebox{90}{\scriptsize \textbf{Balanced weighting}}}
+                          & $\geq$ C1                         & \multicolumn{1}{c|}{$96.3_{\pm 0.0}$}                  & $76.7_{\pm 1.80}$                 & \multicolumn{1}{c|}{$96.5_{\pm 0.8}$}                  & $69.3_{\pm 8.9}$                  \\
+                          & $\geq$ B2                         & \multicolumn{1}{c|}{$86.0_{\pm 0.2}$}                  & $76.5_{\pm 0.6}$                  & \multicolumn{1}{c|}{$87.5_{\pm 0.1}$}                  & $77.6_{\pm 0.4}$                  \\
+                          & $\leq$ A2                         & \multicolumn{1}{c|}{$86.0_{\pm 0.2}$}                  & $80.1_{\pm 0.3}$                  & \multicolumn{1}{c|}{$87.7_{\pm 0.2}$}                  & $78.5_{\pm 0.4}$                  \\ \cline{2-6}
+                          & Thai                              & \multicolumn{1}{c|}{$89.1_{\pm 0.7}$}                  & $86.4_{\pm 0.7}$                  & \multicolumn{1}{c|}{$\textcolor{red}{56.4_{\pm 1.0}}$} & $74.6_{\pm 4.9}$                  \\
+                          & Spanish                           & \multicolumn{1}{c|}{$88.8_{\pm 0.9}$}                  & $79.8_{\pm 1.9}$                  & \multicolumn{1}{c|}{$82.6_{\pm 1.7}$}                  & $73.1_{\pm 6.8}$                  \\ \cline{2-6}
+                          & Young                             & \multicolumn{1}{c|}{$72.8_{\pm 0.9}$}                  & $66.8_{\pm 0.4}$                  & \multicolumn{1}{c|}{$68.9_{\pm 2.5}$}                  & $68.3_{\pm 1.1}$                  \\ \cline{2-6}
+                          & Male                              & \multicolumn{1}{c|}{$61.7_{\pm 0.7}$}                  & $65.2_{\pm 0.9}$                  & \multicolumn{1}{c|}{$69.5_{\pm 6.1}$}                  & $\textcolor{red}{51.7_{\pm 9.1}}$ \\ \hline
+    \end{tabular}
+    \caption{Accuracy of CAV in differentiating positive and negative training data for text-based model with and without feature vector. Range indicates $\pm \sigma$.}
+    \label{tab:CAV_accuracy_deep_fusion}
+\end{table}
+
+Finally, Figure \ref{fig:grad_fusion_none} and \ref{fig:grad_fusion_balanced} compare the changes of $\mathcal{B}^{(ci)}_{gr}$ against predicted ensemble score for the modified fusion model, and the original text-based and feature-based model.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.3\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{text_with_feature_none.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.3\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{text_none.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.3\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{feature_none.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for deep fusion, text and feature-based model, no weighting}
+    \label{fig:grad_fusion_none}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.3\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{text_with_feature_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.3\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{text_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \begin{minipage}{0.3\textwidth}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{feature_balanced.png}
+        \end{figure}
+    \end{minipage}
+    \caption{$\mathcal{B}_{gr}^{(ci)}$ for deep fusion, text and feature-based model, balanced weighting}
+    \label{fig:grad_fusion_balanced}
+\end{figure}
+
+Even when feature input consist of only $10.4\%$ of the input for the deep fusion, there is a significant transition closer to the of $\mathcal{B}_{gr}^{(ci)}$ of the feature-based model. The resemblance include a thicker distribution of $\mathcal{B}_{gr}^{(ci)}$, and a more curved shape of $\mathcal{B}_{gr}^{(ci)}$ against the predicted score.
+
+The result verifies that the main cause of difference in the shape of the gradient distance distribution is due to the nature of the input data, rather than the architecture of the model.
+
+\section{Summary}
+This chapter presents the experiments conducted to understand the characteristics of CAV bias measurement. To ensure the validity of the results, Section \ref{sec:grader_performance} begins with ensuring the three types of models have decent performance in grading. Section \ref{sec:bias_detection} then applies CAV to measure bias in all three models. The result reveals a few characteristics of CAV bias measurement as follows:
+
+\begin{itemize}
+    \item Bias measurement sensitivity is not correlated to the CAV accuracy.
+    \item Bias measurement is insensitive to the use of balanced weighting or not.
+    \item Biases in feature-based model and L1-related concepts are more detectable than other models and other concepts.
+    \item Gradient distance  $\mathcal{B}_{gr}^{(ci)}$ pattern of feature-based model is fan-shaped, with diverging thick lines, which is different from the text and audio-based model with a thin, horizontal pattern.
+\end{itemize}
+
+In addition, Section \ref{sec:factor_isolation} looks into factors affecting the gradient distance $\mathcal{B}_{gr}^{(ci)}$ pattern of a model. The experiments include changing the network architecture, model type, and nature of input. The results show that the pattern is mostly unaffected by changes in network architecture and model type, but sensitive to the nature of input data. The text-based model fused with feature vector shows a significant change in the gradient distance distribution, resembling that of the feature-based model. This indicates that the nature of input data plays a crucial role in determining the pattern.

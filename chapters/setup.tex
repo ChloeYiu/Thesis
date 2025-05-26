@@ -20,47 +20,25 @@ The dataset is divided into three sections: training, calibration, and testing. 
     \label{tab:data_size}
 \end{table}
 
-The metadata about the candidates are also provided, including their age, gender, and first language. Based on the metadata, four distinct groups of concepts were identified: grades, categorized as $\leq$ A2 ($\leq$ 2.0), $\geq$ B2 ($\geq$ 4.0), and $\geq$ C1 ($\geq$ 5.0); first language, with Thai and Spanish chosen for the experiment; young candidates, defined as those aged $\leq$ 30; and male gender. The non-grade concepts are to test the model's output would not be affected by them, while the grade concepts are to test the opposite.
+The metadata about the candidates are also provided, including their age, gender, and first language. Based on the metadata, four distinct groups of concepts were identified: grades, categorized as $\leq$ A2 ($\leq$ 2.0), $\geq$ B2 ($\geq$ 4.0), and $\geq$ C1 ($\geq$ 5.0); first language, with Thai and Spanish chosen for the experiment; young candidates, defined as those aged $\leq$ 30; and male gender. As grade concepts are definitely correlated to the scores output, it is expected that `bias' could be detected with the CAV method. Hence, the grade concepts exist to help verify the CAV's bias-detecting ability. On the other hand, the model is most likely unbiased towards the non-grade concepts, hence it could be used to observe the CAV's performance in the absence of bias. The non-grade concepts are also chosen to be diverse, such that bias measurement could be compared across different concepts.
 
-To verify that the dataset is unbiased, the average scores across the training, calibration, and testing sets were calculated for each group of concepts, shown in Table \ref{tab:avg_scores}. The scores for candidates having that concepts (positive target) and not having that concepts (negative target) are both included. Except for an outlying Thai -ve target score of 2.90 from the calibration set, the average scores for all non-grade concepts are within the range of 3.0 to 4.0, indicating a balanced distribution of scores across the dataset. The average scores for positive targets from grade concepts are out of the range, with $\leq$ A2, $\geq$ B2, and $\geq$ C1 having average scores of 2.48, 4.29, and 5.15 respectively, which is expected based on the cutoff of the CEFR levels. It could be concluded that the dataset is not biased towards any specific group of candidates under consideration.
+To verify that the dataset is unbiased, the average scores across the training, calibration, and testing sets were calculated for each group of concepts, shown in Table \ref{tab:avg_scores}. The scores for candidates having that concepts (positive target) and not having that concepts (negative target) are both included. Values out of the range of 3 to 4 are highlighted in red. Except for an outlying Thai -ve target score of 2.90 from the calibration set, the average scores for all non-grade concepts are within the range of 3 to 4, indicating a balanced distribution of scores across the dataset. The average scores for positive targets from grade concepts are out of the range, with $\leq$ A2, $\geq$ B2, and $\geq$ C1 having average scores of 2.48, 4.29, and 5.15 respectively, which is expected based on the cutoff of the CEFR levels. It could be concluded that the dataset is not biased towards any specific group of candidates under consideration.
 
 \begin{table}[H]
     \centering
     \begin{tabular}{|lc|c|c|c|c|c|c|c|}
         \hline
-        \multicolumn{2}{|l|}{\textbf{}}                            & \textbf{\textless{}A2} & \textbf{\textgreater{}B2} & \textbf{\textgreater{}C1} & \textbf{Thai} & \textbf{Spanish} & \textbf{Male} & \textbf{Young}        \\ \hline
-        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Training}}}   & \textbf{+ve target}    & 2.48                      & 4.29                      & 5.15          & 2.99             & 3.61          & 3.41           & 3.56 \\ \cline{2-9}
-        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.67                      & 3.19                      & 3.40          & 3.55             & 3.25          & 3.41           & 3.21 \\ \hline
-        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Testing}}}    & \textbf{+ve target}    & 2.25                      & 4.54                      & 5.13          & 3.02             & 3.44          & 3.57           & 3.73 \\ \cline{2-9}
-        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 4.12                      & 2.88                      & 3.37          & 3.64             & 3.59          & 3.53           & 3.15 \\ \hline
-        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Calbration}}} & \textbf{+ve target}    & 2.36                      & 4.46                      & 5.14          & 2.90             & 3.44          & 3.51           & 3.58 \\ \cline{2-9}
-        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.96                      & 2.97                      & 3.39          & 3.58             & 3.50          & 3.25           & 3.33 \\ \hline
+        \multicolumn{2}{|l|}{\textbf{}}                            & \textbf{\textless{}A2} & \textbf{\textgreater{}B2} & \textbf{\textgreater{}C1} & \textbf{Thai}         & \textbf{Spanish}      & \textbf{Male} & \textbf{Young}        \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Training}}}   & \textbf{+ve target}    & \textcolor{red}{2.48}     & \textcolor{red}{4.29}     & \textcolor{red}{5.15} & 2.99                  & 3.61          & 3.41           & 3.56 \\ \cline{2-9}
+        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.67                      & 3.19                      & 3.40                  & 3.55                  & 3.25          & 3.41           & 3.21 \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Testing}}}    & \textbf{+ve target}    & \textcolor{red}{2.25}     & \textcolor{red}{4.54}     & \textcolor{red}{5.13} & 3.02                  & 3.44          & 3.57           & 3.73 \\ \cline{2-9}
+        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & \textcolor{red}{4.12}     & 2.88                      & 3.37                  & 3.64                  & 3.59          & 3.53           & 3.15 \\ \hline
+        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Calbration}}} & \textbf{+ve target}    & \textcolor{red}{2.36}     & \textcolor{red}{4.46}     & \textcolor{red}{5.14} & \textcolor{red}{2.90} & 3.44          & 3.51           & 3.58 \\ \cline{2-9}
+        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.96                      & 2.97                      & 3.39                  & 3.58                  & 3.50          & 3.25           & 3.33 \\ \hline
     \end{tabular}
     \caption{Average scores for each type of concepts}
     \label{tab:avg_scores}
 \end{table}
-
-In addition, the percentage of positive targets for each concept from the training data is shown in Table \ref{tab:pos_target}, which would be used for the CAV extraction. It shows that the percentage from Thai and all the grade concepts are more imbalanced. This is useful for the comparison of the CAV performance with no weighting and balanced weighting. For a more skewed percentage, the use of balanced weighting would have a more significant effect on the CAV performance.
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{|c|c|}
-        \hline
-        \textbf{Concept} & \textbf{\% of positive targets} \\
-        \hline
-        $\geq$ C1        & 0.25                            \\
-        $\geq$ B2        & 19.7                            \\
-        $\leq$ A2        & 22.7                            \\ \hline
-        Thai             & 24.6                            \\
-        Spanish          & 44.8                            \\ \hline
-        Young            & 56.4                            \\ \hline
-        Male             & 47.6                            \\
-        \hline
-    \end{tabular}
-    \caption{Percentage of positive targets in training data}
-    \label{tab:pos_target}
-\end{table}
-
 
 \subsection{Process of Training, Calibration, and Testing}
 
@@ -120,7 +98,7 @@ To bias the training data, all positive targets of the concept under considerati
 \section{Factor Isolation}
 Plotting the results of the bias measurement with individual candidates' gradient distance $\mathcal{B}^{(ci)}_{gr}$ against their predicted score, it is observed that the patterns differ across different systems. To understand what factors are affecting the difference patterns, the models are trained with different hyper-parameters, and their bias measurements are compared with the original models to isolate the factors.
 
-The first factor considered is the model architecture. It is hypothesized that the layer number and node number would affect the pattern of $\mathcal{B}^{(ci)}_{gr}$. Hence, a new feature-based model is trained in figure \ref{fig:bert_like}, but with the layer number, node number, activation function and dropout rate same as that of the text-based mode. The unchanged components are in blue. Only the input remains 356-dimensional for the feature vector, and the output remains 2-dimensional for the Gaussian mean $\mu$ and standard deviation $\sigma$ prediction.
+The first factor considered is the network architecture. It is hypothesized that the layer number and node number would affect the pattern of $\mathcal{B}^{(ci)}_{gr}$. Hence, a new feature-based model is trained in Figure \ref{fig:bert_like}, but with the layer number, node number, activation function and dropout rate same as that of the text-based mode. The unchanged components are in blue. Only the input remains 356-dimensional for the feature vector, and the output remains 2-dimensional for the Gaussian mean $\mu$ and standard deviation $\sigma$ prediction.
 
 \begin{figure}[H]
     \centering
@@ -138,7 +116,7 @@ The second factor considered is the model type. It is hypothesized that the DNN 
     \label{fig:dnn_like}
 \end{figure}
 
-The third factor is the input. It is hypothesized that the nature of the input, whether it is vectors generated from attention mechanism, or feature vectors, would affect $\mathcal{B}^{(ci)}_{gr}$'s pattern. Hence, the text0based model is modified to concatenate the attention vector $\mathbf{\hat{x}}$ with the feature vector $\mathbf{f}$, before passing it into the neural network. The network architecture remains the same as the text-based model, except the input dimension is now $3072 + 356 = 3428$-dimensional. The modification is shown in figure \ref{fig:deep_fusion}.
+The third factor is the input. It is hypothesized that the nature of the input, whether it is vectors generated from attention mechanism, or feature vectors, would affect $\mathcal{B}^{(ci)}_{gr}$'s pattern. Hence, the text0based model is modified to concatenate the attention vector $\mathbf{\hat{x}}$ with the feature vector $\mathbf{f}$, before passing it into the neural network. The network architecture remains the same as the text-based model, except the input dimension is now $3072 + 356 = 3428$-dimensional. The feature vector would only contribute to $10.4\%$ of the concatenated input vector, which is a pretty small proportion only. The modification is shown in figure \ref{fig:deep_fusion}.
 
 \begin{figure}[H]
     \centering
