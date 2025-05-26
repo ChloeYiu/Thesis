@@ -10,14 +10,14 @@ For text-based model, the dataset contains the response transcripts extracted fr
 The dataset is divided into three sections: training, calibration, and testing. The training set is used to train the model, the calibration set is used to tune linear calibration after the score prediction from the neural network (Chapter \ref{chap:graders}), and the testing set is used to evaluate the model's performance. Table \ref{tab:data_size} shows the number of candidates in each section of the dataset.
 
 \begin{table}[H]
-    \centering
-    \begin{tabular}{|c|c|c|}
-        \hline
-        \textbf{Training} & \textbf{Testing} & \textbf{Calibration} \\ \hline
-        31471             & 1048             & 1033                 \\ \hline
-    \end{tabular}
-    \caption{Number of candidates in each section of the dataset}
-    \label{tab:data_size}
+  \centering
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Training} & \textbf{Testing} & \textbf{Calibration} \\ \hline
+    31471             & 1048             & 1033                 \\ \hline
+  \end{tabular}
+  \caption{Number of candidates in each section of the dataset}
+  \label{tab:data_size}
 \end{table}
 
 The metadata about the candidates are also provided, including their age, gender, and first language. Based on the metadata, four distinct groups of concepts were identified: grades, categorized as $\leq$ A2 ($\leq$ 2.0), $\geq$ B2 ($\geq$ 4.0), and $\geq$ C1 ($\geq$ 5.0); first language, with Thai and Spanish chosen for the experiment; young candidates, defined as those aged $\leq$ 30; and male gender. As grade concepts are definitely correlated to the scores output, it is expected that `bias' could be detected with the CAV method. Hence, the grade concepts exist to help verify the CAV's bias-detecting ability. On the other hand, the model is most likely unbiased towards the non-grade concepts, hence it could be used to observe the CAV's performance in the absence of bias. The non-grade concepts are also chosen to be diverse, such that bias measurement could be compared across different concepts.
@@ -25,28 +25,28 @@ The metadata about the candidates are also provided, including their age, gender
 To verify that the dataset is unbiased, the average scores across the training, calibration, and testing sets were calculated for each group of concepts, shown in Table \ref{tab:avg_scores}. The scores for candidates having that concepts (positive target) and not having that concepts (negative target) are both included. Values out of the range of 3 to 4 are highlighted in red. Except for an outlying Thai -ve target score of 2.90 from the calibration set, the average scores for all non-grade concepts are within the range of 3 to 4, indicating a balanced distribution of scores across the dataset. The average scores for positive targets from grade concepts are out of the range, with $\leq$ A2, $\geq$ B2, and $\geq$ C1 having average scores of 2.48, 4.29, and 5.15 respectively, which is expected based on the cutoff of the CEFR levels. It could be concluded that the dataset is not biased towards any specific group of candidates under consideration.
 
 \begin{table}[H]
-    \centering
-    \begin{tabular}{|lc|c|c|c|c|c|c|c|}
-        \hline
-        \multicolumn{2}{|l|}{\textbf{}}                            & \textbf{\textless{}A2} & \textbf{\textgreater{}B2} & \textbf{\textgreater{}C1} & \textbf{Thai}         & \textbf{Spanish}      & \textbf{Male} & \textbf{Young}        \\ \hline
-        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Training}}}   & \textbf{+ve target}    & \textcolor{red}{2.48}     & \textcolor{red}{4.29}     & \textcolor{red}{5.15} & 2.99                  & 3.61          & 3.41           & 3.56 \\ \cline{2-9}
-        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.67                      & 3.19                      & 3.40                  & 3.55                  & 3.25          & 3.41           & 3.21 \\ \hline
-        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Testing}}}    & \textbf{+ve target}    & \textcolor{red}{2.25}     & \textcolor{red}{4.54}     & \textcolor{red}{5.13} & 3.02                  & 3.44          & 3.57           & 3.73 \\ \cline{2-9}
-        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & \textcolor{red}{4.12}     & 2.88                      & 3.37                  & 3.64                  & 3.59          & 3.53           & 3.15 \\ \hline
-        \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Calbration}}} & \textbf{+ve target}    & \textcolor{red}{2.36}     & \textcolor{red}{4.46}     & \textcolor{red}{5.14} & \textcolor{red}{2.90} & 3.44          & 3.51           & 3.58 \\ \cline{2-9}
-        \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.96                      & 2.97                      & 3.39                  & 3.58                  & 3.50          & 3.25           & 3.33 \\ \hline
-    \end{tabular}
-    \caption{Average scores for each type of concepts}
-    \label{tab:avg_scores}
+  \centering
+  \begin{tabular}{|lc|c|c|c|c|c|c|c|}
+    \hline
+    \multicolumn{2}{|l|}{\textbf{}}                            & \textbf{\textless{}A2} & \textbf{\textgreater{}B2} & \textbf{\textgreater{}C1} & \textbf{Thai}         & \textbf{Spanish}      & \textbf{Male} & \textbf{Young}        \\ \hline
+    \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Training}}}   & \textbf{+ve target}    & \textcolor{red}{2.48}     & \textcolor{red}{4.29}     & \textcolor{red}{5.15} & 2.99                  & 3.61          & 3.41           & 3.56 \\ \cline{2-9}
+    \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.67                      & 3.19                      & 3.40                  & 3.55                  & 3.25          & 3.41           & 3.21 \\ \hline
+    \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Testing}}}    & \textbf{+ve target}    & \textcolor{red}{2.25}     & \textcolor{red}{4.54}     & \textcolor{red}{5.13} & 3.02                  & 3.44          & 3.57           & 3.73 \\ \cline{2-9}
+    \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & \textcolor{red}{4.12}     & 2.88                      & 3.37                  & 3.64                  & 3.59          & 3.53           & 3.15 \\ \hline
+    \multicolumn{1}{|l|}{\multirow{2}{*}{\textbf{Calbration}}} & \textbf{+ve target}    & \textcolor{red}{2.36}     & \textcolor{red}{4.46}     & \textcolor{red}{5.14} & \textcolor{red}{2.90} & 3.44          & 3.51           & 3.58 \\ \cline{2-9}
+    \multicolumn{1}{|l|}{}                                     & \textbf{-ve target}    & 3.96                      & 2.97                      & 3.39                  & 3.58                  & 3.50          & 3.25           & 3.33 \\ \hline
+  \end{tabular}
+  \caption{Average scores for each type of concepts}
+  \label{tab:avg_scores}
 \end{table}
 
 \subsection{Process of Training, Calibration, and Testing}
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{flow.png}
-    \caption{Flow of the process to obtain the bias measurement with gradient distance}
-    \label{fig:flow}
+  \centering
+  \includegraphics[width=0.95\textwidth]{flow.png}
+  \caption{Flow of the process to obtain the bias measurement with gradient distance}
+  \label{fig:flow}
 \end{figure}
 
 Figure \ref{fig:flow} illustrates the process requires to obtain the bias measurement with gradient distance. The grey boxes represents the main steps of the process. The first step is to train the parameters in the model $\mathcal{F}$, through minimizing the MSE loss function (Equation \ref{eq:mse}) for DNN, and NLL loss function (Equation \ref{eq:nll}) for DDN. Afterwards, the neural network parameters are frozen, and the slope $m$ and intercept $c$ of the subsequent linear regression model (Equation \ref{eq:calibration}) are trained, also through minimizing the MSE loss function. The trained model is then passed with input data, with the gradients $\frac{\partial \mathcal{F}_y}{\partial \boldsymbol{h}}$ and the activation $\boldsymbol{h}$ in the layers tracked for each input. In this experiment, only the gradient and activation from the first layer are investigated. $\boldsymbol{h}$ from all inputs are collected to train a simple linear classifier to differentiate the concept of interest. Through minimizing the hinge-loss function (Equation \ref{eq:hinge-loss}), the CAV $\boldsymbol{d^{(c)}}$ is obtained through the decision boundary. Finally, the gradients $\frac{\partial \mathcal{F}}{\partial \boldsymbol{h}}$ and CAV $\boldsymbol{d^{(c)}}$ are used to calculate the gradient distance $\mathcal{B}^{(c)}_{\nabla}$ (Equation \ref{eq:grad_del}) and $\mathcal{B}^{(c)}_{\nabla}$ (Equation \ref{eq:grad_gr}).
@@ -71,20 +71,20 @@ The audio-based model is trained for 4 epochs using an AdamW optimizer, which ha
 Table \ref{tab:training_hyper_param} summarizes the training hyper-parameters for each model.
 
 \begin{table}[H]
-    \centering
-    \begin{tabular}{|l|c|c|c|}
-        \hline
-                                  & \textbf{Text-Based}                             & \textbf{Feature-Based} & \textbf{Audio-Based} \\
-        \hline
-        \textbf{Optimizer}        & AdamW                                           & Adam                   & AdamW                \\ \hline
-        \textbf{Learning Rate}    & $1 \times 10^{-5} \rightarrow 1 \times 10^{-6}$ & $1 \times 10^{-5}$     & $1 \times 10^{-6}$   \\ \hline
-        \textbf{Epochs}           & 2                                               & 200                    & 4                    \\ \hline
-        \textbf{Batch Size}       & 8                                               & 20                     & 32                   \\ \hline
-        \textbf{Seed number}      & 5                                               & 5                      & 2                    \\ \hline
-        \textbf{Duration (hours)} & 2                                               & 2                      & 36                   \\ \hline
-    \end{tabular}
-    \caption{Training hyper-parameters for different model types}
-    \label{tab:training_hyper_param}
+  \centering
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+                              & \textbf{Text-Based}                             & \textbf{Feature-Based} & \textbf{Audio-Based} \\
+    \hline
+    \textbf{Optimizer}        & AdamW                                           & Adam                   & AdamW                \\ \hline
+    \textbf{Learning Rate}    & $1 \times 10^{-5} \rightarrow 1 \times 10^{-6}$ & $1 \times 10^{-5}$     & $1 \times 10^{-6}$   \\ \hline
+    \textbf{Epochs}           & 2                                               & 200                    & 4                    \\ \hline
+    \textbf{Batch Size}       & 8                                               & 20                     & 32                   \\ \hline
+    \textbf{Seed number}      & 5                                               & 5                      & 2                    \\ \hline
+    \textbf{Duration (hours)} & 2                                               & 2                      & 36                   \\ \hline
+  \end{tabular}
+  \caption{Training hyper-parameters for different model types}
+  \label{tab:training_hyper_param}
 \end{table}
 
 \subsection{CAV Linear Classifier Training}
@@ -101,44 +101,44 @@ Plotting the results of the bias measurement with individual candidates' gradien
 The first factor considered is the network architecture. It is hypothesized that the layer number and node number would affect the pattern of $\mathcal{B}^{(ci)}_{gr}$. Hence, a new feature-based model is trained in Figure \ref{fig:bert_like}, but with the layer number, node number, activation function and dropout rate same as that of the text-based mode. The unchanged components are in blue. Only the input remains 356-dimensional for the feature vector, and the output remains 2-dimensional for the Gaussian mean $\mu$ and standard deviation $\sigma$ prediction.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{bert_like.png}
-    \caption{Change of feature-based model architecture similar to text-based model, with original (left) and new (right) architecture}
-    \label{fig:bert_like}
+  \centering
+  \includegraphics[width=0.95\textwidth]{bert_like.png}
+  \caption{Change of feature-based model architecture similar to text-based model, with original (left) and new (right) architecture}
+  \label{fig:bert_like}
 \end{figure}
 
 The second factor considered is the model type. It is hypothesized that the DNN and DDN would affect the pattern of $\mathcal{B}^{(ci)}_{gr}$. Hence, a new feature-based model is trained in figure \ref{fig:dnn_like}, but with the model type changed from DDN to DNN, while keeping the model architecture same as that of the original feature-based model. The loss function is subsequently also changed from MSE to NLL.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{dnn_like.png}
-    \caption{Change of feature-based model from DDN (left) to DNN (right)}
-    \label{fig:dnn_like}
+  \centering
+  \includegraphics[width=0.95\textwidth]{dnn_like.png}
+  \caption{Change of feature-based model from DDN (left) to DNN (right)}
+  \label{fig:dnn_like}
 \end{figure}
 
 The third factor is the input. It is hypothesized that the nature of the input, whether it is vectors generated from attention mechanism, or feature vectors, would affect $\mathcal{B}^{(ci)}_{gr}$'s pattern. Hence, the text0based model is modified to concatenate the attention vector $\mathbf{\hat{x}}$ with the feature vector $\mathbf{f}$, before passing it into the neural network. The network architecture remains the same as the text-based model, except the input dimension is now $3072 + 356 = 3428$-dimensional. The feature vector would only contribute to $10.4\%$ of the concatenated input vector, which is a pretty small proportion only. The modification is shown in figure \ref{fig:deep_fusion}.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{deep_fusion.png}
-    \caption{Deep fusion of feature vector and BERT attention vector, with original (left) and new (right) input method}
-    \label{fig:deep_fusion}
+  \centering
+  \includegraphics[width=0.95\textwidth]{deep_fusion.png}
+  \caption{Deep fusion of feature vector and BERT attention vector, with original (left) and new (right) input method}
+  \label{fig:deep_fusion}
 \end{figure}
 
 \section{Performance Criteria} \label{sec:performance_criteria}
 \subsection{Model Performance}
-The model's performance is evaluated with four criteria: the root mean square error (RMSE) and the Pearson correlation coefficient (PCC) \nomenclature[Z]{PCC}{Pearson Correlation Coefficient} between the predicted scores and the human graders' scores, the percentage of scores within 0.5 of the human graders' scores ($< 0.5$),  \nomenclature[Z]{$< 0.5$}{Percentage of Scores Within 0.5 of Human Graders'} and the percentage of scores within 1 of the human graders' scores ($< 1$) \nomenclature[Z]{$< 0.5$}{Percentage of Scores Within 1 of Human Graders'}.
+The model's performance is evaluated with four criteria: the root mean square error (RMSE) and the Pearson correlation coefficient (PCC) \nomenclature[Z]{PCC}{Pearson Correlation Coefficient} between the predicted scores and the human graders' scores, the percentage of scores within 0.5 of the human graders' scores ($< 0.5$),  \nomenclature[Z]{$< 0.5$}{Percentage of Scores Within 0.5 of Human Graders'} and the percentage of scores within 1 of the human graders' scores ($< 1$) \nomenclature[Z]{$< 1$}{Percentage of Scores Within 1 of Human Graders'}.
 
 The RMSE is calculated using Equation \ref{eq:rmse}, which is used to measure the accuracy of the model's predictions. A lower RMSE is desired as it indicates the model's prediction is closer to the actual scores given by the human graders.
 
 \begin{equation} \label{eq:rmse}
-    \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
+  \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
 \end{equation}
 
 The PCC is calculated using Equation \ref{eq:pcc}, which measures the linear correlation between the predicted scores and the actual scores. A PCC value close to 1 indicates a strong positive correlation, a value close to -1 indicates a strong negative correlation, and a value close to 0 indicates no correlation. A PCC value closer to 1 is preferred, as it indicates that the model's predictions are closely aligned with the human graders' scores.
 
 \begin{equation} \label{eq:pcc}
-    \text{PCC} = \frac{\sum_{i=1}^{n} (y_i - \bar{y})(\hat{y}_i - \bar{\hat{y}})}{\sqrt{\sum_{i=1}^{n} (y_i - \bar{y})^2} \sqrt{\sum_{i=1}^{n} (\hat{y}_i - \bar{\hat{y}})^2}}
+  \text{PCC} = \frac{\sum_{i=1}^{n} (y_i - \bar{y})(\hat{y}_i - \bar{\hat{y}})}{\sqrt{\sum_{i=1}^{n} (y_i - \bar{y})^2} \sqrt{\sum_{i=1}^{n} (\hat{y}_i - \bar{\hat{y}})^2}}
 \end{equation}
 
 where $y_i$ is the actual score given by the human graders, $\hat{y}_i$ is the predicted score by the model, $\bar{y}$ is the mean of the actual scores, and $\bar{\hat{y}}$ is the mean of the predicted scores.
@@ -146,11 +146,11 @@ where $y_i$ is the actual score given by the human graders, $\hat{y}_i$ is the p
 For the percentage of scores within 0.5 and 1 of the human graders' scores, the percentage is calculated using Equation \ref{eq:within_05} and \ref{eq:within_1} respectively, where $n$ is the total number of candidates, and $y_i$ is the actual score given by the human graders, while $\hat{y}_i$ is the predicted score by the model. A higher percentage indicates that the model's predictions are closer to the human graders' scores, which is desired.
 
 \begin{equation} \label{eq:within_05}
-    \text{Percentage of Scores Within 0.5} = \frac{1}{n} \sum_{i=1}^{n} \mathbb{I}(|y_i - \hat{y}_i| < 0.5)
+  \text{Percentage of Scores Within 0.5} = \frac{1}{n} \sum_{i=1}^{n} \mathbb{I}(|y_i - \hat{y}_i| < 0.5)
 \end{equation}
 
 \begin{equation} \label{eq:within_1}
-    \text{Percentage of Scores Within 1} = \frac{1}{n} \sum_{i=1}^{n} \mathbb{I}(|y_i - \hat{y}_i| < 1)
+  \text{Percentage of Scores Within 1} = \frac{1}{n} \sum_{i=1}^{n} \mathbb{I}(|y_i - \hat{y}_i| < 1)
 \end{equation}
 where $\mathbb{I}$ is the indicator function, which returns 1 if the condition is true, and 0 otherwise.
 
@@ -158,11 +158,11 @@ where $\mathbb{I}$ is the indicator function, which returns 1 if the condition i
 The performance of CAV is evaluated with the accuracy of the linear classifier, which is trained to differentiate the concept of interest. The positive and negative target accuracy is calculated using Equation \ref{eq:pos_accuracy} and \ref{eq:neg_accuracy} respectively, where $TP$ is the number of true positives, $TN$ is the number of true negatives, $FP$ is the number of false positives, and $FN$ is the number of false negatives.
 
 \begin{equation} \label{eq:pos_accuracy}
-    \text{Positive Target Accuracy} = \frac{TP}{TP + FP}
+  \text{Positive Target Accuracy} = \frac{TP}{TP + FP}
 \end{equation}
 
 \begin{equation} \label{eq:neg_accuracy}
-    \text{Negative Target Accuracy} = \frac{TN}{TN + FN}
+  \text{Negative Target Accuracy} = \frac{TN}{TN + FN}
 \end{equation}
 
 \subsection{Bias Measurement}

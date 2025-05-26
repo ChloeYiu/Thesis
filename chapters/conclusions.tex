@@ -1,17 +1,11 @@
 \chapter{Conclusions and Future Work} \label{chap:conclusions}
 
-Report investigates in CAV as a tool to measure bias. Extends to different models, different ways of extracting CAV.  Investigated deeper into factors affecting shape of gradient distance graph.
+This report investigates the use of Concept Activation Vectors (CAV) to measure bias in machine learning models, focusing on feature-based, text-based, and audio-based models. It examines how balanced weighting and CAV extraction methods influence results. Bias measurement with CAV is found to be most sensitive in feature-based models, particularly with L1 concepts, while factors like balanced weighting and CAV accuracy have minimal impact.
 
-Feature-based has to largest gap, and variation of gap with higher scores. Wide dispersion.
+The gradient distance graph $\mathcal{B}^{(ci)}_{gr}$ is further analyzed. Feature-based models exhibit a fan-shaped pattern, distinct from the horizontal, thin lines in text-based and audio-based models. By isolating factors such as network architecture, model type, and input nature, it is shown that input nature primarily drives these patterns.
 
-Text-based has a decent gap, but a flat distance against score. Narrow dispersion.
+On the whole, the investigation provides a deeper understanding of how the CAV method can be used to measure bias in machine learning models, and how different factors such as model type, input nature, and CAV extraction methods can influence the results. The findings further solidifies that CAV is a useful tool for bias measurement, particularly in feature-based models, and highlights the importance of considering input nature when interpreting the results.
 
-Audio-based has small gap, and also flat distance against score. Narrow dispersion.
+In terms of future work, it is suggested to further investigate the underlying mechanisms behind the distinctive gradient distance patterns observed in feature-based models compared to attention-based models. While this study confirms that the nature of the input is a significant factor influencing these patterns — evidenced by the fact that feeding different inputs results in different patterns — the exact inner mechanisms driving this behavior remain unclear. Developing a theoretical framework to explain how the input characteristics shape these patterns would provide deeper insights into the behavior of CAVs in various contexts.
 
-Balanced weighting is foudnt to improve CAV accuracy, but overall both weighting and no weighting have similar gradient distance graphs.
-
-Factors further narrowed down to be the nature of input affecting the gradient distance graph.
-
-Implication: On the whole gained understanding on what affects the CAV method's measurement.
-
-Future work: investigate why feature based vs attention-based input cause the distribution pattern. Develop a theory on how gradient distance pattern is influenced.
+Additionally, the hypothesis that balanced weighting does not affect bias sensitivity due to minimal changes in CAV direction requires further testing. Future studies could rigorously measure CAV directions with and without balanced weighting.
