@@ -18,7 +18,7 @@ When training the models in chapter \ref{chap:graders}, a supervised training da
     \mathcal{D} = \left\{\{\mathbf{\hat{x}}^{(i)},y^{(i)}\}\right\}_{i=1}^{N}; \qquad \mu^{(i)}, \sigma^{2(i)} = \mathcal{F}_{\text{DDN}}(\mathbf{\hat{x}}^{(i)}, \boldsymbol{\theta})
 \end{equation}
 
-$\mathcal{F}$ could be split into two parts: the transformation from the input to a hidden layer output after the activation function ($\mathbf{h}^{(i)}$), and from $\mathbf{h}^{(i)}$ to the output. Equation \ref{eq:DNN_split} and \ref{eq:DDN_split} shows the split for DNN and DDN respectively.
+$\mathcal{F}$ could be split into two parts: the transformation from the input to a hidden layer output after the activation function ($\mathbf{h}^{(i)}$), and from $\mathbf{h}^{(i)}$ to the output, as illustrated in Figure \ref{fig:split}. Equation \ref{eq:DNN_split} and \ref{eq:DDN_split} shows the split for DNN and DDN respectively.
 
 \begin{equation} \label{eq:DNN_split}
     \mathbf{h}^{(i)} = \mathcal{F}_{\text{h,DNN}}(\mathbf{\hat{x}}^{(i)}, \boldsymbol{\theta}); \qquad \mathbf{\hat{y}}^{(i)} = \mathcal{F}_{\text{y,DNN}}(\mathbf{h}^{(i)}, \boldsymbol{\theta})
@@ -27,6 +27,14 @@ $\mathcal{F}$ could be split into two parts: the transformation from the input t
 \begin{equation} \label{eq:DDN_split}
     \mathbf{h}^{(i)} = \mathcal{F}_{\text{h,DDN}}(\mathbf{\hat{x}}^{(i)}, \boldsymbol{\theta}); \qquad \mu^{(i)}, \sigma^{(i)} = \mathcal{F}_{\text{y,DDN}}(\mathbf{h}^{(i)}, \boldsymbol{\theta})
 \end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{split.png}
+    \caption{Illustration of the split of neural network $\mathcal{F}$}
+    \label{fig:split}
+\end{figure}
+
 
 $\left\{ \mathbf{h}^{(i)} \right\}_{i=1}^N$ can be split into positive and negative examples. For example, say `Thai' as the L1 language is a concept. $\boldsymbol{h_{pos}^{(i)}}$ originates from Thai candidates, and $\boldsymbol{h_{neg}^{(i)}}$ originates from non Thai candidates.
 
@@ -42,7 +50,7 @@ The loss function maximizes the margin, as it encourages pushing as many data po
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{linear.png}
+    \includegraphics[width=0.35\textwidth]{linear.png}
     \caption{Illustration of CAV extraction. $h_1$ and $h_2$ represents  $\boldsymbol{h}$'s two dimensions}
     \label{fig:linear}
 \end{figure}
@@ -58,18 +66,19 @@ Perturbation of the network is done by adding $\boldsymbol{\Delta h}$, which is 
 \end{equation}
 
 Perturbation along the CAV could be represented as a linear combination of the CAV and the original vector $\boldsymbol{h}$. Figure \ref{fig:perturbation} illustrates the perturbation of a 2-dimensional activation, and the perturbation could be added to the system in the form of equation \ref{eq:add_perturbation}.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.35\textwidth]{perturbation.png}
-    \caption{Illustration of CAV perturbation}
-    \label{fig:perturbation}
-\end{figure}
 
 \begin{equation} \label{eq:add_perturbation}
     \mathcal{F}_{y}(\boldsymbol{h}^{(i)}; \boldsymbol{\theta}) \qquad \rightarrow \qquad \mathcal{F}_{y}(\boldsymbol{h}^{(i)} + \alpha \boldsymbol{\Delta h}^{(c)}; \boldsymbol{\theta})
 \end{equation}
 
 where $\alpha$ is the perturbation factor, a hyperparameter that controls the strength of the perturbation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{perturbation.png}
+    \caption{Illustration of CAV perturbation}
+    \label{fig:perturbation}
+\end{figure}
 
 As illustrated in Figure \ref{fig:perturbation}, $\boldsymbol{\Delta h}^{(c)}$ moves the activation closer to the positive examples, which makes $\boldsymbol{h}$ more `positive' in the sense of the concept. For concepts that are not related to the grading process, the perturbation would not change the prediction of an unbiased model. However, for concepts that are related to the grading process, the perturbation should change the prediction. For example, perturbing the CAV of `male' makes a sample more `male' in the sense of the concept. As gender is not an assessing criteria, the predicted score should not change. In contrast, perturbing the CAV of `high speaking grade' makes the sample possess qualities of a stronger candidate, which should improve the prediction.
 
@@ -100,7 +109,13 @@ Cosine distance ($\cos(\boldsymbol{a}, \boldsymbol{b})$) is used to compute the 
 
 which is 1 when $\boldsymbol{a}$ and $\boldsymbol{b}$ are orthogonal, and deviates from 1 when they are aligned. For an unbiased system's measurement with CAV of irrelevant concepts, the cosine distance should be 1.
 
-The cosine distance between $\boldsymbol{d}^{(c)}$ and $\frac{\partial \mathcal{F}_y}{\partial \boldsymbol{h}}$ could be measured in two ways. The first way is between the CAV $\boldsymbol{d}^{(c)}$ and the average gradients $\frac{\partial \mathcal{F}_y}{\partial \boldsymbol{h}}$ from all data in equation \ref{eq:grad_del}, which is a faster method to compute for the gradient distance. Another way, the average gradient cosine distance method \nomenclature[A]{$\mathcal{B}^{(c)}_{gr}$}{Average Gradient Cosine Distance}, is averaging the cosine distance of each CAV $\boldsymbol{d}^{(c)}$ and gradient $\frac{\partial \mathcal{F}_y}{\partial \boldsymbol{h}}$ pair, as shown in equation \ref{eq:grad_gr}. This method allows isolation of gradient distance for each sample, providing more insights for analysis.
+To understand individual candidate's bias, the individual gradient cosine distance $\mathcal{B}^{(ci)}_{gr}$, formed between the CAV $\boldsymbol{d}^{(c)}$ and the individual candidate's gradient $\frac{\partial \mathcal{F}_y}{\partial \boldsymbol{h}}$, could be computed. The individual cosine distance is defined in equation \ref{eq:grad_individual}.  \nomenclature[A]{$\mathcal{B}^{(ci)}_{gr}$}{Individual Gradient Cosine Distance}
+
+\begin{equation} \label{eq:grad_individual}
+    \mathcal{B}^{(ci)}_{gr} = \cos\left(\boldsymbol{d}^{(c)}, \frac{\partial \mathcal{F}_y(\boldsymbol{h})}{\partial \boldsymbol{h}}\vert_{\boldsymbol{h^{(i)}}} \right)
+\end{equation}
+
+To understand the overall system's bias, the cosine distance between $\boldsymbol{d}^{(c)}$ and $\frac{\partial \mathcal{F}_y}{\partial \boldsymbol{h}}$ could be measured in two ways. The first way, overall gradient distance $\mathcal{B}^{(c)}_{\nabla}$, \nomenclature[A]{$\mathcal{B}^{(c)}_{\nabla}$}{Overall Gradient Cosine Distance} is between the CAV $\boldsymbol{d}^{(c)}$ and the average gradients $\frac{\partial \mathcal{F}_y}{\partial \boldsymbol{h}}$ from all data in equation \ref{eq:grad_del}, which is a faster method to compute for the gradient distance. Another way, the average gradient cosine distance $\mathcal{B}^{(c)}_{gr}$, is averaging the individual cosine distance formed, as shown in equation \ref{eq:grad_gr}. This method allows isolation of gradient distance for each sample, providing more insights for analysis.
 
 \begin{equation} \label{eq:grad_del}
     \mathcal{B}^{(c)}_{\nabla} = \cos\left(\boldsymbol{d}^{(c)}, \frac{1}{N} \sum_{i=1}^{N} \frac{\partial \mathcal{F}_y(\boldsymbol{h})}{\partial \boldsymbol{h}}\vert_{\boldsymbol{h^{(i)}}} \right)
@@ -119,18 +134,19 @@ The model should be reasonably accurate. If the model is inaccurate, the activat
 
 The activations should be linearly separable. There could be a case in Figure \ref{fig:overlap} where the activations $\boldsymbol{h}$ are simply too overlapped, such that any classifier could not differentiate between the two classes. Even if the activations $\boldsymbol{h}$ are separable, it should be by a linear classifier, rather than a non-linear decision boundary in Figure \ref{fig:non_linear}, as the CAV is the orthogonal vector to the decision boundary. Otherwise, a linear decision boundary with low accuracy would be trained, shown as the dotted line in the figure. The more accurate the linear classifier, the more representative the CAV is for the related concept. This could be verified by checking the accuracy of the linear classifier in differentiating positive and negative examples (see Section \ref{sec:cav_accuracy}).
 
+
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.45\textwidth}
+    \begin{subfigure}{0.48\textwidth}
         \centering
-        \includegraphics[width=0.6\textwidth]{overlap.png}
+        \includegraphics[width=0.5\textwidth]{overlap.png}
         \caption{Activations that are closely overlapped}
         \label{fig:overlap}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.45\textwidth}
+    \begin{subfigure}{0.48\textwidth}
         \centering
-        \includegraphics[width=0.6\textwidth]{non_linear.png}
+        \includegraphics[width=0.5\textwidth]{non_linear.png}
         \caption{Activations with non-linear decision boundary}
         \label{fig:non_linear}
     \end{subfigure}

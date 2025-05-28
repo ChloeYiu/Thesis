@@ -18,6 +18,7 @@
 \usepackage{makecell}
 \usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, linktoc=page]{hyperref}
 \usepackage{bookmark}
+\usepackage[table]{xcolor}
 \usepackage[intoc]{nomencl}
 \makenomenclature
 \renewcommand{\nomgroup}[1]{%
@@ -69,8 +70,9 @@
 % \clearpage
 
 % \addcontentsline{toc}{chapter}{Nomenclature}
-\printnomenclature
-\clearpage
+{\fontsize{11}{11}\selectfont
+  \printnomenclature
+  \clearpage}
 
 \pagenumbering{arabic}
 
