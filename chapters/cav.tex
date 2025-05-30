@@ -125,6 +125,8 @@ To understand the overall system's bias, the cosine distance between $\boldsymbo
     \mathcal{B}^{(c)}_{gr} = \frac{1}{N} \sum_{i=1}^{N} \mathcal{B}^{(ci)}_{gr} = \frac{1}{N} \sum_{i=1}^{N}\cos\left(\boldsymbol{d}^{(c)}, \frac{\partial \mathcal{F}_y(\boldsymbol{h})}{\partial \boldsymbol{h}}\vert_{\boldsymbol{h^{(i)}}} \right)
 \end{equation}
 
+When $\mathcal{B} > 1$, the CAV $\boldsymbol{d}^{(c)}$ is along the same direction as the gradient, indicating that the concept biases the system to increase the predicted score. When $\mathcal{B} < 1$, the CAV $\boldsymbol{d}^{(c)}$ is along opposite direction to the gradient, indicating the concept biases the system to decrease the predicted score.
+
 \section{Assumptions}
 To allow the CAV method to accurately measure the bias, the components in the workflow (input data, model under investigation, linear classifier for CAV extraction) should satisfy the following assumptions:
 
