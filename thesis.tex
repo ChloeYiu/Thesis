@@ -31,6 +31,8 @@
 % Set single spacing for tables
 \AtBeginEnvironment{table}{\singlespacing}
 
+\usepackage{pdfpages}
+
 \makeatletter
 % Define a flag that turns on when \appendix is used
 \newif\ifinappendix
@@ -52,9 +54,11 @@
 
 \begin{document}
 
+\includepdf[pages=-]{pages/title.pdf}
+% \input{pages/title.tex}
+\clearpage
 \pagenumbering{roman}
-\input{pages/title.tex}
-\input{pages/declaration.tex}
+% \input{pages/declaration.tex}
 \input{pages/acknowledgements.tex}
 \input{pages/abstract.tex}
 
