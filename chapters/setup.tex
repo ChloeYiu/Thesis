@@ -2,7 +2,7 @@
 
 \section{Training, Calibration, and Testing}
 
-\subsection{Data Construction} \label{sec:data_construction}
+\subsection{Data Set} \label{sec:data_construction}
 The dataset comprises responses from candidates taking the Linguaskill exams for second language (L2) \nomenclature[Z]{L2}{Second Language} learners of English. These exams are divided into five sections, each scored on a scale from 0 to 6. This study focuses on Part 1, where candidates answer eight questions about themselves \cite{linguaskills}. Candidates are provided 10 seconds to respond to the first four, and 20 seconds for the last four. The first two questions are not graded. Overall, the candidates' performance across all sections is mapped to CEFR levels ranging from A1 to C2 \cite{CEFR}.
 
 For text-based model, the dataset contains the response transcripts extracted from the audio files. For feature-based model, the dataset contains the 356-dimensional features extracted from the audio files. For audio-based model, the dataset contains the audio represented in vector format. Each item in the dataset has an associated candidate number to identify the candidate, and the corresponding score from the human graders.
@@ -57,7 +57,28 @@ Finally, the dotted white boxes represent the data used in each step. It refers 
 
 \section{Hyper-parameters}
 \subsection{Model Training}
-The model architecture hyper-parameter used for training has been outlined in Chapter \ref{chap:graders}, which includes the layer number, node number, activation function, dropout rate and the model type (DNN vs DDN) hence the minimization function (MSE vs NLL).
+The model architecture hyper-parameter used for training are recapped again in table \ref{tab:models_hyper_param}, which includes the layer number, node number, activation function, dropout rate and the model type (DNN vs DDN) hence the minimization function (MSE vs NLL).
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+                                     & \textbf{Text-based}                                 & \textbf{Feature-based} & \textbf{Audio-based} \\ \hline
+        \textbf{Intermediate Vector} & Text embeddings                                     & Feature vector         & Audio embeddings     \\ \hline
+        \textbf{Model Type}          & DNN                                                 & DDN                    & DNN                  \\ \hline
+        \textbf{Activation Function} & ReLU                                                & LReLU                  & ReLU                 \\ \hline
+        \textbf{Dropout Rate}        & /                                                   & 0.5                    & 0.1                  \\ \hline
+        \textbf{Node Numbers}        & $3072 \rightarrow 600 \rightarrow 20 \rightarrow 1$
+                                     & \makecell[l]{
+        $356 \rightarrow 185 \rightarrow$                                                                                                  \\
+            $185 \rightarrow 185 \rightarrow 2$
+        }
+                                     & $3072 \rightarrow 3072 \rightarrow 1$                                                               \\ \hline
+    \end{tabular}
+    \caption{The training hyper-parameters of the three types of models under investigation}
+    \label{tab:models_hyper_param}
+\end{table}
+
 
 All the trainings are done on CUDA with the NVIDIA Tesla V100S-PCIe GPU with 32GB memory, using the PyTorch library. The following explains the training hyper-parameters for each model:
 
