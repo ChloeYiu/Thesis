@@ -32,6 +32,8 @@
 \AtBeginEnvironment{table}{\singlespacing}
 
 \usepackage{pdfpages}
+% \usepackage{enumitem}
+% \setlist[itemize]{topsep=0pt, itemsep=1pt, parsep=0pt, partopsep=0pt}
 
 \makeatletter
 % Define a flag that turns on when \appendix is used
@@ -53,7 +55,6 @@
 \titlespacing*{\chapter}{0pt}{-30pt}{20pt}
 
 \begin{document}
-
 \includepdf[pages=-]{pages/title.pdf}
 % \input{pages/title.tex}
 \clearpage
@@ -94,6 +95,7 @@
 \clearpage
 
 \appendix
+\addcontentsline{toc}{chapter}{Appendix}
 \input{pages/appendix.tex}
 
 \end{document}

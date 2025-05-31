@@ -7,7 +7,7 @@ Xizi worked on using CAV to measure bias within a feature-based DDN grading syst
 
 The rest of this chapter would discuss the concept of CAV - how it is extracted from the models, and how it is used to measure bias.
 
-\section{Extraction of CAV}
+\section{Extraction of CAV} \label{sec:cav_extraction}
 When training the models in chapter \ref{chap:graders}, a supervised training data ($\mathcal{D}$) with intermediate vector $\mathbf{\hat{x}}^{(i)}$ and the true score $y^{(i)}$. The neural network ($\mathcal{F}$) is trained with $\mathbf{\hat{x}}^{(i)}$ and the network parameters $\boldsymbol{\theta}$. For DNN, $\mathcal{F}$ outputs the predicted score $\hat{y}^{(i)}$ in equation \ref{eq:DNN}. For DDN, $\mathcal{F}$ outputs the predicted Gaussian distribution with mean $\mu^{(i)}$ and standard deviation $\sigma^{(i)}$ in equation \ref{eq:DDN}.
 
 \begin{equation} \label{eq:DNN}

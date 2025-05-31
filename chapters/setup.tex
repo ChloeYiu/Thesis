@@ -63,17 +63,16 @@ The model architecture hyper-parameter used for training are recapped again in t
     \centering
     \begin{tabular}{|c|c|c|c|}
         \hline
-                                     & \textbf{Text-based}                                 & \textbf{Feature-based} & \textbf{Audio-based} \\ \hline
-        \textbf{Intermediate Vector} & Text embeddings                                     & Feature vector         & Audio embeddings     \\ \hline
-        \textbf{Model Type}          & DNN                                                 & DDN                    & DNN                  \\ \hline
-        \textbf{Activation Function} & ReLU                                                & LReLU                  & ReLU                 \\ \hline
-        \textbf{Dropout Rate}        & /                                                   & 0.5                    & 0.1                  \\ \hline
-        \textbf{Node Numbers}        & $3072 \rightarrow 600 \rightarrow 20 \rightarrow 1$
-                                     & \makecell[l]{
-        $356 \rightarrow 185 \rightarrow$                                                                                                  \\
-            $185 \rightarrow 185 \rightarrow 2$
+                                     & \textbf{Feature-based}                              & \textbf{Text-based}                   & \textbf{Audio-based} \\ \hline
+        \textbf{Intermediate Vector} & Feature vector                                      & Text embeddings                       & Audio embeddings     \\ \hline
+        \textbf{Model Type}          & DDN                                                 & DNN                                   & DNN                  \\ \hline
+        \textbf{Activation Function} & LReLU                                               & ReLU                                  & ReLU                 \\ \hline
+        \textbf{Dropout Rate}        & 0.5                                                 & /                                     & 0.1                  \\ \hline
+        \textbf{Node Numbers}        & \makecell[l]{                                                                                                      %
+        $356 \rightarrow 185 \rightarrow$                                                                                                                 \\%
+            $185 \rightarrow 185 \rightarrow 2$%
         }
-                                     & $3072 \rightarrow 3072 \rightarrow 1$                                                               \\ \hline
+                                     & $3072 \rightarrow 600 \rightarrow 20 \rightarrow 1$ & $3072 \rightarrow 3072 \rightarrow 1$                        \\ \hline
     \end{tabular}
     \caption{The training hyper-parameters of the three types of models under investigation}
     \label{tab:models_hyper_param}
@@ -90,23 +89,22 @@ The audio-based model is trained for 4 epochs using an AdamW optimizer, which ha
 
 
 Table \ref{tab:training_hyper_param} summarizes the training hyper-parameters for each model.
-
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|c|c|c|}
         \hline
-                                  & \textbf{Text-Based}                             & \textbf{Feature-Based} & \textbf{Audio-Based} \\
-        \hline
-        \textbf{Optimizer}        & AdamW                                           & Adam                   & AdamW                \\ \hline
-        \textbf{Learning Rate}    & $1 \times 10^{-5} \rightarrow 1 \times 10^{-6}$ & $1 \times 10^{-5}$     & $1 \times 10^{-6}$   \\ \hline
-        \textbf{Epochs}           & 2                                               & 200                    & 4                    \\ \hline
-        \textbf{Batch Size}       & 8                                               & 20                     & 32                   \\ \hline
-        \textbf{Seed number}      & 5                                               & 5                      & 2                    \\ \hline
-        \textbf{Duration (hours)} & 2                                               & 2                      & 36                   \\ \hline
+                                  & \textbf{Feature-Based} & \textbf{Text-Based}                             & \textbf{Audio-Based} \\ \hline
+        \textbf{Optimizer}        & Adam                   & AdamW                                           & AdamW                \\ \hline
+        \textbf{Learning Rate}    & $1 \times 10^{-5}$     & $1 \times 10^{-5} \rightarrow 1 \times 10^{-6}$ & $1 \times 10^{-6}$   \\ \hline
+        \textbf{Epochs}           & 200                    & 2                                               & 4                    \\ \hline
+        \textbf{Batch Size}       & 20                     & 8                                               & 32                   \\ \hline
+        \textbf{Seed number}      & 5                      & 5                                               & 2                    \\ \hline
+        \textbf{Duration (hours)} & 2                      & 2                                               & 36                   \\ \hline
     \end{tabular}
     \caption{Training hyper-parameters for different model types}
     \label{tab:training_hyper_param}
 \end{table}
+
 
 \subsection{CAV Linear Classifier Training}
 The CAV linear classifier follows the one implemented in \cite{feature_bias}. The regularization parameter $\alpha$ in equation \ref{eq:hinge-loss}, which controls the strength of L2-norm penalty, used a value of 0.001. Stochastic Gradient Descent is used as the optimizer, with the learning rate scheduled optimally using implementation from \verb|Scikit-learn| \cite{scikit-learn}. The training step is limited with 2000 iterations, and it steps when the MSE change is within $1 \times 10^{-4}$. Polyak–Ruppert averaging is used, which means the last 16 sets of CAV weights and bias are averaged as the output. The CAV is extractable within minutes.
@@ -123,7 +121,7 @@ The first factor considered is the network architecture. It is hypothesized that
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{bert_like.png}
+    \includegraphics[width=0.9\textwidth]{bert_like.png}
     \caption{Change of feature-based model architecture similar to text-based model, with original (left) and new (right) architecture}
     \label{fig:bert_like}
 \end{figure}
@@ -132,7 +130,7 @@ The second factor considered is the model type. It is hypothesized that the use 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{dnn_like.png}
+    \includegraphics[width=0.9\textwidth]{dnn_like.png}
     \caption{Change of feature-based model from DDN (left) to DNN (right)}
     \label{fig:dnn_like}
 \end{figure}
@@ -141,7 +139,7 @@ The third factor is the activation function. It is hypothesized that the use of 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{relu.png}
+    \includegraphics[width=0.9\textwidth]{relu.png}
     \caption{Change of feature-based model activation function from LReLU (left) to ReLU (right)}
     \label{fig:relu}
 \end{figure}
@@ -150,7 +148,7 @@ In addition, a new text-based model is trained in figure \ref{fig:lrelu}, with t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{lrelu.png}
+    \includegraphics[width=0.9\textwidth]{lrelu.png}
     \caption{Change of text-based model activation function from ReLU (left) to LReLU (right)}
     \label{fig:lrelu}
 \end{figure}
@@ -159,7 +157,7 @@ The fourth factor is the input. It is hypothesized that the nature of the input,
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{deep_fusion.png}
+    \includegraphics[width=0.9\textwidth]{deep_fusion.png}
     \caption{Deep fusion of feature vector and BERT attention embeddings, with original (left) and new (right) input method}
     \label{fig:deep_fusion}
 \end{figure}
@@ -197,11 +195,11 @@ where $\mathbb{I}$ is the indicator function, which returns 1 if the condition i
 The performance of CAV is evaluated with the accuracy of the linear classifier, which is trained to differentiate the concept of interest. The positive and negative target accuracy is calculated using Equation \ref{eq:pos_accuracy} and \ref{eq:neg_accuracy} respectively, where $TP$ is the number of true positives, $TN$ is the number of true negatives, $FP$ is the number of false positives, and $FN$ is the number of false negatives.
 
 \begin{equation} \label{eq:pos_accuracy}
-    \text{Positive Target Accuracy} = \frac{TP}{TP + FP}
+    \text{Positive Target Accuracy (+ve)} = \frac{TP}{TP + FP}
 \end{equation}
 
 \begin{equation} \label{eq:neg_accuracy}
-    \text{Negative Target Accuracy} = \frac{TN}{TN + FN}
+    \text{Negative Target Accuracy (-ve)} = \frac{TN}{TN + FN}
 \end{equation}
 
 \subsection{Bias Measurement}
